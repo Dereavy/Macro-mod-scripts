@@ -1,0 +1,60 @@
+
+Log("Look at a crafting bench")
+Wait(10t)
+KEY(use)
+set(#invslot,9)
+//Looking for iron
+DO()
+inc(#invslot,1)
+    getslotitem(%#invslot%,&item)
+    if(%#invslot%=45);log(You are a quite poor fellow, you need at least 24 iron!);break;endif
+until(%&item%="iron_ingot")
+getslotitem(%#invslot%,&item)
+//Picking up iron
+            SLOTCLICK(%#invslot%)
+            For(&for,1,9);getslotitem(%&for%,&Slot%&for%)
+            next 
+ 
+//Crafting chestplate,helmet and boots
+   
+            if(%&slot1%!="iron_ingot");SLOTCLICK(1,r);endif
+            if(%&slot2%!="air");SLOTCLICK(2,r);endif
+            if(%&slot3%!="iron_ingot");SLOTCLICK(3,r);endif
+            if(%&slot4%!="iron_ingot");do(3);SLOTCLICK(4,r);loop;endif
+            if(%&slot5%!="iron_ingot");do(2);SLOTCLICK(5,r);loop;endif
+            if(%&slot6%!="iron_ingot");do(3);SLOTCLICK(6,r);loop;endif
+            if(%&slot7%!="iron_ingot");do(3);SLOTCLICK(7,r);loop;endif
+            if(%&slot8%!="iron_ingot");SLOTCLICK(8,r);endif
+            if(%&slot9%!="iron");do(3);SLOTCLICK(9,r);loop;endif
+            do(3);SLOTCLICK(0,l,true);loop
+            wait(10t)
+//Crafting Leggings
+            if(%&slot1%!="iron_ingot");SLOTCLICK(1,r);endif
+            if(%&slot2%!="iron_ingot");SLOTCLICK(2,r);endif
+            if(%&slot3%!="iron_ingot");SLOTCLICK(3,r);endif
+            if(%&slot4%!="iron_ingot");SLOTCLICK(4,r);endif
+            if(%&slot6%!="iron_ingot");SLOTCLICK(6,r);endif
+            if(%&slot7%!="iron_ingot");SLOTCLICK(7,r);endif
+            if(%&slot9%!="iron_ingot");SLOTCLICK(9,r);endif
+            do(3);SLOTCLICK(0,l,true);loop
+   
+next
+
+//equiping the armor - This part is optional and can be removed if needed.
+
+//getting the inventory gui
+gui(inventory)
+//Equiping Armour
+set(#invslot,9)
+For(#invslot,9,45)
+        getslotitem(%#invslot%,&item)
+        if(%&item%="iron_helmet");SLOTCLICK(%#invslot%,l,true);endif
+        if(%&item%="iron_chestplate");SLOTCLICK(%#invslot%,l,true);endif
+        if(%&item%="iron_leggings");SLOTCLICK(%#invslot%,l,true);endif
+        if(%&item%="iron_boots");SLOTCLICK(%#invslot%,l,true);endif
+next
+
+
+
+
+

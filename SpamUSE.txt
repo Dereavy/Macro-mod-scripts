@@ -1,0 +1,5 @@
+do()
+key(use)
+wait(1t)
+loop()
+

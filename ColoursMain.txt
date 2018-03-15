@@ -1,0 +1,7 @@
+Echo(Here are the different colour codes :)
+wait(25t)
+Echo(Colours :     &11 &22 &33 &44 &55 &66 &77 &88 &99 &aa &bb &cc &dd &ee &ff)
+wait(25t)
+Echo(K is &kthis&r&b                 L is &lBold&r&b              M is &mStroked)
+wait(25t)
+Echo(N is &nUnderline&r&b       O is &oItalic&r&b              R is &rReset)

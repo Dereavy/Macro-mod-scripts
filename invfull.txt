@@ -1,0 +1,16 @@
+UNSET(invnotfull);
+Gui(inventory);
+For(#i,9,44);
+    GetSlotItem(%#i%,&id);
+    Log(%#i% %&id%);
+    If(&id = "air");
+        SET(invnotfull);
+        Break;
+    Endif;
+Next;
+Press(ESCAPE);
+If(invnotfull);
+    Log("Inventory not full");
+Else;
+    Log("Inventory full");
+Endif;

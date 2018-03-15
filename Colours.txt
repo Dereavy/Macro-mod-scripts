@@ -1,0 +1,19 @@
+Log(Here are the different colour codes :)
+Log( )
+Log(Item Colors: &213 &a5 &e4 &61 &414 &c2 &d6 &510 &911 &39 &b3 &f0 &78 &87 &f15&8&oBlack &f12&8&oBrown)
+Log(Item IDs: &7Wool:35 Clay:159 Glass:95)
+Log( )
+Log(Chat Colours :     &11 &22 &33 &44 &55 &66 &77 &88 &99 &aa &bb &cc &dd &ee &ff)
+Log( )
+Log(K is &kthis&r&b                 L is &lBold&r&b              M is &mStroked)
+Log( )
+Log(N is &nUnderline&r&b       O is &oItalic&r&b              R is &rReset)
+
+Log( )
+
+
+
+
+
+
+

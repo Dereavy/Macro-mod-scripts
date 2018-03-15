@@ -1,0 +1,58 @@
+echo(/nick &bFrostyTheSnowman)
+wait(4200ms)
+echo(Frosty the Snowman, was a jolly happy soul,)
+wait(4200ms)
+echo(With a corn cob pipe and a button nose, and two eyes made of coal.)
+wait(4200ms)
+echo(Frosty the Snowman, is a fairytale, they say.
+wait(4200ms)
+echo(He was made of snow, but the children know he came to life one day.)
+wait(4200ms)
+
+echo(There must have been some magic in that old silk hat they found,)
+wait(4200ms)
+
+echo(For when they placed it on his head, he began to dance around!
+)
+wait(4200ms)
+echo(Oh, Frosty, the Snowman, was alive as he could be;)
+wait(4200ms)
+echo(and the children say he could laugh and play,)
+wait(4200ms)
+echo(just the same as you and me.)
+
+wait(4200ms)
+echo(Thumpety thump, thump, thumpety thump, thump,
+wait(4200ms)
+echo(look at Frosty go.)
+
+wait(4200ms)
+echo(Thumpety thump, thump, thumpety thump, thump,
+wait(4200ms)
+echo(over the hills of snow.)
+wait(4200ms)
+
+echo(Frosty the Snowman, knew the sun was hot that day,)
+wait(4200ms)
+echo(so he said, "Let's run, and we'll have some fun now, before I melt away.")
+wait(4200ms)
+
+echo(Down to the village, with a broomstick in his hand,)
+wait(4200ms)
+echo(Running here and there, all around the square,)
+wait(4200ms)
+echo(sayin', "Catch me if you can.")
+
+wait(4200ms)
+echo(He led them down the streets of town, right to the traffic cop;)
+wait(4200ms)
+
+echo(and only paused a moment, when he heard him holler, "Stop!")
+wait(4200ms)
+
+echo(For Frosty, the Snowman, had to hurry on his way,)
+wait(4200ms)
+echo(But he waved goodbye, sayin' "Don't cry, I'll be back again some day.")
+wait(4200ms)
+echo(/nick off)
+

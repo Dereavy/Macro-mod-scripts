@@ -1,0 +1,17 @@
+STRIP(&chat, %CHAT%)
+
+IFCONTAINS(%&chat%,Congratulations, you win!)
+Wait(1500ms)
+echo("gg")
+ENDIF
+
+IFCONTAINS(%&chat%,[Party] Lezappen: gg)
+Wait(500ms)
+echo("!gg")
+ENDIF
+
+//Slime survival
+IFCONTAINS(%&chat%,+25 experience)
+Wait(500ms)
+echo("gg")
+ENDIF

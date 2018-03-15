@@ -1,0 +1,6 @@
+do(1)
+echo(<o/)
+wait(10t)
+echo(\o>)
+wait(10t)
+loop

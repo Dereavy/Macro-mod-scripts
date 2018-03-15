@@ -1,0 +1,13 @@
+Log(#YAW,#PITCH)
+do()
+Random(#pitch,90,-90);
+//Log(%#pitch%)
+Random(#yaw,180,-180);
+//Log(#yaw%)
+Look(%#yaw%,%#pitch%)
+
+    KEYDOWN(forward)
+    Sprint()
+    wait(5ms)
+    KEYUP(forward)
+loop

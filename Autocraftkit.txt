@@ -1,0 +1,75 @@
+Log(Put the crafting bench down!)
+key(use)
+wait(2t)
+key(use)
+Log(crafting...)
+            For(&for,1,9);getslotitem(%&for%,&Slot%&for%)
+            next 
+Log(Preparing items)
+//Stack items
+Do(2)
+    For(#invslot,9,45)
+        inc(#invslot,1)
+            getslotitem(%#invslot%,&item)
+                if(%&item%="diamond");SLOTCLICK(%#invslot%),l,true;endif
+                if(%&item%="string");SLOTCLICK(%#invslot%,l,true);endif
+                if(%&item%="wheat");SLOTCLICK(%#invslot%,l,true);endif
+                if(%&item%="stick");SLOTCLICK(%#invslot%,l,true);endif
+                if(%&item%="gold_ingot");SLOTCLICK(%#invslot%,l,true);endif
+                if(%&item%="flint");SLOTCLICK(%#invslot%,l,true);endif
+                if(%&item%="feather");SLOTCLICK(%#invslot%,l,true);endif
+    Next
+loop
+//Sort items
+do(2)
+    For(#invslot,9,45)
+        inc(#invslot,1)
+            getslotitem(%#invslot%,&item)
+                if(%&item%="gold_ingot");SLOTCLICK(%#invslot%);SLOTCLICK(10);endif
+                if(%&item%="wheat");SLOTCLICK(%#invslot%);SLOTCLICK(11);endif
+                if(%&item%="diamond");SLOTCLICK(%#invslot%);SLOTCLICK(12);endif
+                if(%&item%="stick");SLOTCLICK(%#invslot%);SLOTCLICK(13);endif
+                if(%&item%="string");SLOTCLICK(%#invslot%);SLOTCLICK(14);endif
+                if(%&item%="flint");SLOTCLICK(%#invslot%);SLOTCLICK(15);endif
+                if(%&item%="feather");SLOTCLICK(%#invslot%);SLOTCLICK(16);endif
+    Next
+loop
+//Craft items
+//chestplate, boots and sword
+//Bread
+                        SLOTCLICK(11)
+                        do(3);SLOTCLICK(1,r);SLOTCLICK(2,r);SLOTCLICK(3,r);loop
+                        SLOTCLICK(0,l,true)
+//Gold Helmet
+                        SLOTCLICK(10)
+                        SLOTCLICK(1,r);SLOTCLICK(2,r);SLOTCLICK(3,r)
+                        SLOTCLICK(4,r);SLOTCLICK(6,r)
+                        SLOTCLICK(0,l,true)
+//Leggings and boots
+                        SLOTCLICK(12)
+                        For(&for,1,3);SLOTCLICK(%&for%,r)
+                        next
+                        do(2);SLOTCLICK(4,r);loop
+                        do(2);SLOTCLICK(6,r);loop
+                        do(2);SLOTCLICK(7,r);loop
+                        do(2);SLOTCLICK(9,r);loop
+                        do(2);SLOTCLICK(0,l,true);loop
+                        SLOTCLICK(2,r);SLOTCLICK(5,r)
+//Sword
+                        SLOTCLICK(13)
+                        SLOTCLICK(8,r)
+                        SLOTCLICK(0,l,true)
+//bow and arrows
+                        SLOTCLICK(2,r)
+                        do(3);SLOTCLICK(6,r);loop
+                        SLOTCLICK(8,r)
+                        SLOTCLICK(14)
+                        SLOTCLICK(1,r);SLOTCLICK(4,r);SLOTCLICK(7,r)
+                        SLOTCLICK(0,l,true)
+                        SLOTCLICK(15)
+                        SLOTCLICK(3)
+                        SLOTCLICK(16)
+                        SLOTCLICK(9)
+                        SLOTCLICK(0,l,true)
+
+

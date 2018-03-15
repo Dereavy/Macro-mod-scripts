@@ -1,0 +1,60 @@
+
+Log("Look at a crafting bench")
+Wait(10t)
+KEY(use)
+set(#invslot,9)
+//Looking for diamonds
+DO()
+inc(#invslot,1)
+    getslotitem(%#invslot%,&item)
+    if(%#invslot%=45);log(You are a quite poor fellow, you need at least 24 diamonds!);break;endif
+until(%&item%="diamond")
+getslotitem(%#invslot%,&item)
+//Picking up diamonds
+            SLOTCLICK(%#invslot%)
+            For(&for,1,9);getslotitem(%&for%,&Slot%&for%)
+            next 
+ 
+//Crafting chestplate,helmet and boots
+   
+            if(%&slot1%!="diamond");SLOTCLICK(1,r);endif
+            if(%&slot2%!="air");SLOTCLICK(2,r);endif
+            if(%&slot3%!="diamond");SLOTCLICK(3,r);endif
+            if(%&slot4%!="diamond");do(3);SLOTCLICK(4,r);loop;endif
+            if(%&slot5%!="diamond");do(2);SLOTCLICK(5,r);loop;endif
+            if(%&slot6%!="diamond");do(3);SLOTCLICK(6,r);loop;endif
+            if(%&slot7%!="diamond");do(3);SLOTCLICK(7,r);loop;endif
+            if(%&slot8%!="diamond");SLOTCLICK(8,r);endif
+            if(%&slot9%!="diamond");do(3);SLOTCLICK(9,r);loop;endif
+            do(3);SLOTCLICK(0,l,true);loop
+            wait(10t)
+//Crafting Leggings
+            if(%&slot1%!="diamond");SLOTCLICK(1,r);endif
+            if(%&slot2%!="diamond");SLOTCLICK(2,r);endif
+            if(%&slot3%!="diamond");SLOTCLICK(3,r);endif
+            if(%&slot4%!="diamond");SLOTCLICK(4,r);endif
+            if(%&slot6%!="diamond");SLOTCLICK(6,r);endif
+            if(%&slot7%!="diamond");SLOTCLICK(7,r);endif
+            if(%&slot9%!="diamond");SLOTCLICK(9,r);endif
+            do(3);SLOTCLICK(0,l,true);loop
+   
+next
+
+//equiping the armor - This part is optional and can be removed if needed.
+
+//getting the inventory gui
+gui(inventory)
+//Equiping Armour
+set(#invslot,9)
+For(#invslot,9,45)
+        getslotitem(%#invslot%,&item)
+        if(%&item%="diamond_helmet");SLOTCLICK(%#invslot%,l,true);endif
+        if(%&item%="diamond_chestplate");SLOTCLICK(%#invslot%,l,true);endif
+        if(%&item%="diamond_leggings");SLOTCLICK(%#invslot%,l,true);endif
+        if(%&item%="diamond_boots");SLOTCLICK(%#invslot%,l,true);endif
+next
+
+
+
+
+

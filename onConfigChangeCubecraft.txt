@@ -1,0 +1,5 @@
+BINDGUI("inchat","InChat");
+BINDGUI("ingame","Default");
+BINDGUI("playback","default");
+Log(Cubecraft Config Loaded)
+

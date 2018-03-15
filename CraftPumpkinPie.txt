@@ -1,0 +1,69 @@
+KEY(use)
+WAIT(20t)
+
+DO
+    //This is more complex than the sugar one
+    //because eggs only stack to 16
+    //This means that I don't have to put pumkins
+    //or sugar in every time I put in more eggs
+    //I will check if the item is in the crafting
+    //table and if not put some in
+    GETSLOTITEM(2,&slot2)
+    IF(%&slot2% != "sugar")
+        GETSLOT(sugar,#sugar)
+        IF(%#sugar% = -1)
+            LOG(crafting sugar from reeds)
+            GETSLOT(reeds,#reeds)
+            IF(%#reeds% = -1)
+                LOG(You need reeds to craft sugar)
+                STOP
+            ENDIF
+            SLOTCLICK(1,l,true)
+            WAIT(4t)
+            SLOTCLICK(3,l,true)
+            WAIT(4t)
+            SLOTCLICK(%#reeds%)
+            WAIT(4t)
+            SLOTCLICK(1)
+            WAIT(4t)
+            SLOTCLICK(0,l,true)
+            WAIT(4t)
+            GETSLOT(sugar,#sugar)
+        ENDIF
+        SLOTCLICK(%#sugar%)
+        WAIT(4t)
+        SLOTCLICK(2)
+        WAIT(4t)            
+ENDIF
+
+    GETSLOTITEM(1,&slot1)
+    IF(%&slot1% != "pumpkin")
+        GETSLOT(pumpkin,#pumpkin)
+        IF(%#pumpkin% = -1)
+            LOG(you need pumkins!)
+            STOP
+        ENDIF
+        SLOTCLICK(%#pumpkin%)
+        WAIT(4t)
+        SLOTCLICK(1)
+        WAIT(4t)
+    ENDIF
+
+    GETSLOTITEM(3,&slot3)
+    IF(%&slot3% != "egg")
+        GETSLOT(egg,#egg)
+        IF(%#egg% = -1)
+            LOG(you need eggs!)
+            STOP
+        ENDIF
+        SLOTCLICK(%#egg%)
+        WAIT(4t)
+        SLOTCLICK(3)
+        WAIT(4t)
+    ENDIF
+
+    //Now all the items should be in the table
+    SLOTCLICK(0,l,true)
+    WAIT(4t)
+    
+LOOP
