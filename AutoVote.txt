@@ -1,0 +1,52 @@
+
+
+// Set your vote for healthvote: half, normal, double, triple
+    
+    set(&healthvote,"normal")
+
+// Set your vote for itemvote: hardcore, normal, op
+
+    set(&itemvote,"normal")
+
+//  Setting Health
+if(%&healthvote% ="half")
+    set(&hsvalue,10)
+elseif(%&healthvote% ="normal")
+    set(&hsvalue,12)
+elseif(%&healthvote% ="double")
+    set(&hsvalue,14)
+elseif(%&healthvote% ="triple")
+    set(&hsvalue,16)
+endif
+
+// Setting Items
+if(%&itemvote% ="hardcore")
+    set(&isvalue,11)
+elseif(%&itemvote% ="normal")
+    set(&isvalue,13)
+elseif(%&itemvote% ="op")
+    set(&isvalue,15)
+endif
+
+// Announcing vote.
+log(&6Auto-voting &a%&healthvote% &6health and &a%&itemvote% &6items ...)
+
+//Health
+SLOT(2)
+WAIT(5t)
+KEY(use)
+WAIT(5t)
+SLOTCLICK(15,1,false)
+WAIT(5t)
+SLOTCLICK(%&hsvalue%,1,false)
+gui()
+WAIT(40t)
+
+//Items
+SLOT(2)
+WAIT(5t)
+KEY(use)
+WAIT(5t)
+SLOTCLICK(11,1,false)
+WAIT(5t)
+SLOTCLICK(%&isvalue%,1,false)
