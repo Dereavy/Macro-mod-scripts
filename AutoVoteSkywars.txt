@@ -1,0 +1,75 @@
+
+
+// Set your vote for items: basic, normal, op
+    
+    set(&itemvote,"normal")
+
+// Set your vote for projectiles: none, normal, soft
+
+    set(&projvote,"soft")
+
+// Set your vote for time: night, day, sunset
+
+    set(&timevote,"sunset")
+
+//  Setting Items
+if(%&itemvote% ="basic")
+    set(&isvalue,10)
+elseif(%&itemvote% ="normal")
+    set(&isvalue,13)
+elseif(%&itemvote% ="op")
+    set(&isvalue,16)
+endif
+
+// Setting Projectiles
+if(%&projvote% ="none")
+    set(&psvalue,10)
+elseif(%&projvote% ="normal")
+    set(&psvalue,13)
+elseif(%&projvote% ="soft")
+    set(&psvalue,16)
+endif
+
+// Setting Time
+if(%&timevote% ="night")
+    set(&tsvalue,10)
+elseif(%&timevote% ="day")
+    set(&tsvalue,13)
+elseif(%&timevote% ="sunset")
+    set(&tsvalue,16)
+endif
+
+
+// Announcing vote.
+log(&6Auto-voting &a%&itemvote% &6items, Projectiles: &a%&projvote%&6 and time: %&timevote%)
+
+//Items
+SLOT(2)
+WAIT(5t)
+KEY(use)
+WAIT(5t)
+SLOTCLICK(10,1,false)
+WAIT(5t)
+SLOTCLICK(%&isvalue%,1,false)
+gui()
+WAIT(15t)
+
+//Projectiles
+SLOT(2)
+WAIT(5t)
+KEY(use)
+WAIT(5t)
+SLOTCLICK(13,1,false)
+WAIT(5t)
+SLOTCLICK(%&psvalue%,1,false)
+gui()
+WAIT(15t)
+
+//Time
+SLOT(2)
+WAIT(5t)
+KEY(use)
+WAIT(5t)
+SLOTCLICK(16,1,false)
+WAIT(5t)
+SLOTCLICK(%&tsvalue%,1,false)
