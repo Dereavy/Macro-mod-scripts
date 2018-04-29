@@ -1,0 +1,56 @@
+
+
+// Set your vote for gamevote: blessed, normal, crazy
+    
+    set(&gamevote,"blessed")
+
+// Set your vote for timevote: day, night, sunset
+
+    set(&timevote,"sunset")
+
+//  Setting Gamevote
+if(%&gamevote% ="blessed")
+    set(&hsvalue,10)
+elseif(%&gamevote% ="normal")
+    set(&hsvalue,13)
+elseif(%&gamevote% ="crazy")
+    set(&hsvalue,16)
+endif
+
+// Setting 
+if(%&timevote% ="day")
+    set(&isvalue,10)
+elseif(%&timevote% ="night")
+    set(&isvalue,13)
+elseif(%&timevote% ="sunset")
+    set(&isvalue,16)
+endif
+
+// Announcing vote.
+log(&6Auto-voting &a%&gamevote% &6health and &a%&timevote% &6...)
+
+//Gamevote
+SLOT(2)
+WAIT(150ms)
+KEY(use)
+WAIT(150ms)
+SLOTCLICK(11,1,false)
+WAIT(150ms)
+SLOTCLICK(%&hsvalue%,1,false)
+gui()
+WAIT(200ms)
+
+//Time
+SLOT(2)
+WAIT(150ms)
+KEY(use)
+WAIT(150ms)
+SLOTCLICK(15,1,false)
+WAIT(150ms)
+SLOTCLICK(%&isvalue%,1,false)
+WAIT(150ms)
+SLOTCLICK(22,1,false)
+WAIT(150ms)
+SLOTCLICK(22,1,false)
+
+// Credits to Lezappen
