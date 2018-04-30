@@ -40,7 +40,7 @@ SLOTCLICK(15,1,false)
 WAIT(5t)
 SLOTCLICK(%&hsvalue%,1,false)
 gui()
-WAIT(40t)
+WAIT(5t)
 
 //Items
 SLOT(2)
