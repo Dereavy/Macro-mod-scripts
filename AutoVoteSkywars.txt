@@ -52,7 +52,7 @@ SLOTCLICK(10,1,false)
 WAIT(5t)
 SLOTCLICK(%&isvalue%,1,false)
 gui()
-WAIT(15t)
+WAIT(5t)
 
 //Projectiles
 SLOT(2)
@@ -63,7 +63,7 @@ SLOTCLICK(13,1,false)
 WAIT(5t)
 SLOTCLICK(%&psvalue%,1,false)
 gui()
-WAIT(15t)
+WAIT(5t)
 
 //Time
 SLOT(2)
