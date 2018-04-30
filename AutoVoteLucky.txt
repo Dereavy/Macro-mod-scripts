@@ -10,24 +10,24 @@
 
 //  Setting Gamevote
 if(%&gamevote% ="blessed")
-    set(&hsvalue,10)
+    set(&gsvalue,10)
 elseif(%&gamevote% ="normal")
-    set(&hsvalue,13)
+    set(&gsvalue,13)
 elseif(%&gamevote% ="crazy")
-    set(&hsvalue,16)
+    set(&gsvalue,16)
 endif
 
 // Setting 
 if(%&timevote% ="day")
-    set(&isvalue,10)
+    set(&tsvalue,10)
 elseif(%&timevote% ="night")
-    set(&isvalue,13)
+    set(&tsvalue,13)
 elseif(%&timevote% ="sunset")
-    set(&isvalue,16)
+    set(&tsvalue,16)
 endif
 
 // Announcing vote.
-log(&6Auto-voting &a%&gamevote% &6health and &a%&timevote% &6...)
+log(&6Auto-voting &a%&gamevote% &6mode and &a%&timevote% &6...)
 
 //Gamevote
 SLOT(2)
@@ -36,7 +36,7 @@ KEY(use)
 WAIT(150ms)
 SLOTCLICK(11,1,false)
 WAIT(150ms)
-SLOTCLICK(%&hsvalue%,1,false)
+SLOTCLICK(%&gsvalue%,1,false)
 gui()
 WAIT(200ms)
 
@@ -47,10 +47,9 @@ KEY(use)
 WAIT(150ms)
 SLOTCLICK(15,1,false)
 WAIT(150ms)
-SLOTCLICK(%&isvalue%,1,false)
+SLOTCLICK(%&tsvalue%,1,false)
 WAIT(150ms)
 SLOTCLICK(22,1,false)
-WAIT(150ms)
-SLOTCLICK(22,1,false)
+gui()
 
 // Credits to Lezappen
