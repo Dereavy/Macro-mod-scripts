@@ -1,0 +1,87 @@
+
+
+// Set your vote for healthvote: half, normal, double, triple
+    
+    set(&healthvote,"half")
+
+// Set your vote for itemvote: hardcore, normal, op
+
+    set(&itemvote,"op")
+
+
+// Set your vote for your favourite kit: EggShell, MoneyBags, Rabbit, Buffer, Debuffer, Healer, ShellCracker, EggArmour, FeatherFeet 
+
+    set(&kitvote,"MoneyBags")
+
+//  Setting Health
+if(%&healthvote% ="half")
+    set(&hsvalue,10)
+elseif(%&healthvote% ="normal")
+    set(&hsvalue,12)
+elseif(%&healthvote% ="double")
+    set(&hsvalue,14)
+elseif(%&healthvote% ="triple")
+    set(&hsvalue,16)
+endif
+
+// Setting Items
+if(%&itemvote% ="hardcore")
+    set(&isvalue,11)
+elseif(%&itemvote% ="normal")
+    set(&isvalue,13)
+elseif(%&itemvote% ="op")
+    set(&isvalue,15)
+endif
+
+// Setting Kits
+if(%&kitvote% ="EggShell")
+    set(&ksvalue,0)
+elseif(%&kitvote% ="Rabbit")
+    set(&ksvalue,1)
+elseif(%&kitvote% ="MoneyBags")
+    set(&ksvalue,2)
+elseif(%&kitvote% ="Buffer")
+    set(&ksvalue,3)
+elseif(%&kitvote% ="DeBuffer")
+    set(&ksvalue,4)
+elseif(%&kitvote% ="Healer")
+    set(&ksvalue,5)
+elseif(%&kitvote% ="ShellCracker")
+    set(&ksvalue,6)
+elseif(%&kitvote% ="EggArmour")
+    set(&ksvalue,7)
+elseif(%&kitvote% ="FeatherFeet")
+    set(&ksvalue,8)
+endif
+
+// Announcing vote.
+log(&6Auto-voting &a%&healthvote% &6health and &a%&itemvote% &6items ...)
+log(&6Chosen kit: &a%&kitvote%)
+
+//Health
+SLOT(2)
+WAIT(5t)
+KEY(use)
+WAIT(5t)
+SLOTCLICK(15,1,false)
+WAIT(5t)
+SLOTCLICK(%&hsvalue%,1,false)
+gui()
+
+//Items
+SLOT(2)
+WAIT(5t)
+KEY(use)
+WAIT(5t)
+SLOTCLICK(11,1,false)
+WAIT(5t)
+SLOTCLICK(%&isvalue%,1,false)
+gui()
+
+//Kits
+SLOT(1)
+WAIT(5t)
+KEY(use)
+WAIT(5t)
+SLOTCLICK(%&ksvalue%,1,false)
+
