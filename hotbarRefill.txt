@@ -1,9 +1,9 @@
 GUI(inventory);
 WAIT(100ms)
 
-
 // Set here the default hotbar layout (Items to be filled if slot is empty).
 &hotbaritems=sand cactus cactus cobblestone fence
+
 // Create array of items from &hotbaritems
 // Array &hotbar contains item ids in &hotbaritems
 SPLIT(" ",%&hotbaritems%,&hotbar);
