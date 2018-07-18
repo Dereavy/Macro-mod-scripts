@@ -1,0 +1,90 @@
+GUI(inventory);
+WAIT(100ms)
+
+
+// Set here the default hotbar layout (Items to be filled if slot is empty).
+&hotbaritems=sand cactus cactus cobblestone fence
+// Create array of items from &hotbaritems
+// Array &hotbar contains item ids in &hotbaritems
+SPLIT(" ",%&hotbaritems%,&hotbar);
+
+// Get size of the array, to determine the size of the FOR loop
+// IE the amount of slots we'll be looking at in the hotbar.
+// #hbs    => size of the array, amount of hotbar items.
+// #hbsize => slot id of the last hotbar slot of interest.
+#hbs=ARRAYSIZE(&hotbar, #hbl)
+#hbsize=#hbs+35
+
+// Create &log which is basically &hotbaritems
+// Used to check for differences between user input and the determined array elements.
+FOREACH(&hotbar,&hbitem)
+&log=JOIN(" ",&hotbar)
+NEXT
+
+LOG(&7Checking Hotbar (%#hbs% default items) :) 
+// hotbar[0-#hbs] => default items used as reference if the slot is empty.
+
+// Itterate through all the hotbar slots of interest, cf: &hotbaritems
+FOR(#hbslot,36,%#hbsize%);
+
+    //Get item at the current slot
+    GETSLOTITEM(%#hbslot%,&hbidvar,#stacksize);
+
+    //If the hotbar slot is empty, set item to be searched to the one set in &hotbaritems
+    IF(%&hbidvar%="air")
+        IF %#hbslot%
+        #hotbarpos=%#hbslot%-36
+        &hbidvar=%&hotbar[%#hotbarpos%]%
+    ENDIF
+    
+    //If statement, we don't need to fill up item stacks that are still full.
+    IF(%#stacksize%<63)
+        LOG(&9Refilling slot %#hbslot% with %&hbidvar%)
+
+        //Search inventory for the item in the hotbar item slot that needs refilling
+        FOR(#invslot,9,35)
+            GETSLOTITEM(%#invslot%,&invidvar,#invstacksize);
+            WAIT(10ms);
+            IF(&invidvar=%&hbidvar%)
+                //Click the inventory slot, then the hotbar, then the inventory slot.
+                SLOTCLICK(%#invslot%,l,false)
+                WAIT(10ms)
+                SLOTCLICK(%#hbslot%,l,false)
+                WAIT(10ms)
+                SLOTCLICK(%#invslot%,l,false)
+                WAIT(10ms)
+
+                //Check if the amount in the hotbar is 64, if so, switch to next item:
+                GETSLOTITEM(%#hbslot%,&cidvar,#cstacksize);
+                IF(%#cstacksize%>62)
+                  BREAK
+                ENDIF
+            ENDIF
+        NEXT
+
+        // Check if hotbar slot was filled, if not, express concern in chat.
+        GETSLOTITEM(%#hbslot%,&lidvar,#lstacksize);
+
+        IF(%#lstacksize%<63)
+
+           LOG(&4Cannot refill, not enough %&hbidvar%)
+           // SET variable so the inventory is to be refilled at the end of the script.
+           #refillinventory=1
+
+        ENDIF
+    
+
+    ELSE
+        //LOG(Slot %#hbslot% is full)
+    ENDIF
+
+NEXT
+gui()
+// Check if inventory is to be refilled, if so, run another script to refill it.
+IF(#refillinventory==1)
+    #refillinventory=0
+    LOG(&6You should refill your inventory)
+    // Run script to refill inventory
+    // exec(fillInventory.txt)
+ENDIF
+LOG(&7Process complete.)
