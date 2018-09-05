@@ -1,0 +1,62 @@
+
+
+// CONFIG:
+// Structure: ban command + name + reason + "Teaming with" + names of other teamers + "in" + game
+
+          &bancommand = "/punish"
+          &bantype = "TEAMING" 
+          &game = "Solo Eggwars"
+          
+
+
+    // Set the list of teamers, seperated by spaces
+    &teamers = $$[teamers]
+
+
+    // Create a &team Array containing the names of all those that are teaming.
+    SPLIT(" ",%&teamers%,&team);
+    &list=JOIN(" ",&team)
+
+
+    // Log the users that the script is about to ban in chat.
+    LOG(&7Banning: %&list%)
+
+
+    // Ban the teamers
+    // Itterates through the different names of the teamers
+    //      &teamer = Name of current teamer
+    //      &team   = Names of all the teaming players including current teamer
+    FOREACH(&team,&teamer)
+
+
+        // Itterate through the &team and get the other members.
+        //      &teamer2 = Current itteration of the team member in the second loop
+        //      &others  = Names of all the teaming players excluding current teamer
+        FOREACH(&team,&teamer2)
+
+           // If the name of the &otherteamer is the same as the &teamer we are punishing, ignore it.
+            // Otherwise add it to the &otherteamers array.
+            IF(%&teamer% != %&teamer2%)
+                PUSH(&others,%&teamer2%)
+             &list= JOIN(", ",&others)
+            ENDIF
+         NEXT
+
+         //Clearing the array for the next teamer.
+         FOREACH(&others,&clear)
+           POP(&others,&clear)
+         NEXT 
+
+
+// !!! You can customise this line to suit your needs:
+        //          - &teamer : Variable containing the name of the teamer to be banned.
+        //          - &list   : Variable containing the names of the other players.
+
+        WAIT(200ms)
+        //LOG(&f%&bancommand% &4&l%&teamer% &f%&bantype% Teaming with&e %&list% &fin &l%&game%)
+        //ECHO(.%&bancommand% %&teamer% %&bantype% Teaming with %&list% in %&game%)
+        LOG(.&f%&bancommand% &4%&bantype% &e%&teamer%)
+
+
+    //End of loop, allowing the script to itterate to the next player in the list.
+    NEXT
