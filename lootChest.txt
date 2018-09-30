@@ -1,0 +1,122 @@
+
+// Set this in your main script then comment this out:
+@&search="iron_ingot"
+
+// MODULE: DO NOT EDIT
+//      This script assumes you are already in the chest user interface.
+//      Items you want to grab from the chest:
+//      Item to be sold defined by global variable array: @&search
+
+// Variable saying if the inventory is full or not, do not touch.
+@&invisfull=0
+
+// CONFIGURABLE: Size of chest that will be searched
+//      - Double chest: 53
+//      - Single chest: 26
+#chestsize = 53
+
+wait(2000ms)
+IF(%GUI%=="GUICHEST")
+    // Check if the chest contains the item.
+    do(1)
+//  Check to see if chest contains item.
+        FOR(#chestspace,0,%#chestsize%)
+            getslotitem(%#chestspace%,&found)
+            IF(%@&search%==%&found%)
+                BREAK
+            ENDIF
+        NEXT
+        
+        //If no item is found, output error
+        IF(%&found%!=%@&search%)
+            LOG("> &elootChest.txt &7| &cCould not find &f%@&search%")
+            BREAK
+        ENDIF
+        
+        &chestitem = %&found%
+        
+        Log(&f&lSelling &c&l%&chestitem%)
+        set(#counter,0)
+        set(#counter2,0)
+        
+        // Calculate amount empty inventory slots: #counter
+        Log(> &elootChest.txt &7| &fCounting empty slots in inventory...)
+            #min=#chestsize+1
+            #max=#chestsize+36
+            FOR(#invslot,%#min%,%#max%)
+                getslotitem(%#invslot%,&item)
+                if(%&item%=="air")
+                    inc(#counter,1)
+                endif
+            Next 
+        
+        // EXIT if inventory is full (for efficiency).
+            IF(%#counter%==0)
+                LOG(> &elootChest.txt &7| &cInventory is full!)
+                @&invisfull=1
+                BREAK
+            ELSE
+                @&invisfull=0
+            ENDIF
+        
+        Log(> &elootChest.txt &7| &fAmount of empty inventory slots: &e%#counter% empty slots)
+        
+        // Count amount of available material in the chests: #counter2
+        Log(> &elootChest.txt &7| &fSearching chest for &e%@&search%&f...)
+        
+            FOR(#invslot,0,%#chestsize%)
+                getslotitem(%#invslot%,&item)
+                if(&item==%@&search%)
+                    inc(#counter2,1)
+                endif
+        
+                // If there is more material than inv slots, stop counting for efficiency.
+                IF(%#counter2%>%#counter%)
+                    BREAK
+                ENDIF
+            Next
+        
+        // In chat how many iron ingots where found
+            IF(%#counter%>%#counter2%)
+                Log(> &elootChest.txt &7| &fAmount of stacks of &e%@&search% &fin chest:&e %#counter2%)
+            ELSE
+                Log(> &elootChest.txt &7| &fAmount of stacks of &e%@&search% &fin chest:&e More than %#counter%.)
+            ENDIF
+        
+//Grab the items
+        IF(%#counter2%<%#counter%)
+            do(%#counter2%)
+                GETSLOT(%&chestitem%,#eslot,0)
+                //Log(Item Slot : %#eslot%)
+                getslotitem(%#eslot%,&secitem)
+                //Log(%#eslot%,(%&chestitem% - %&secitem% )
+                slotclick(%#eslot%,l,true)
+                //Log(%&chestitem%=%&secitem%)
+            loop
+            Log(> &elootChest.txt &7| &f%#counter2% %&chestitem% collected !)
+        ELSE
+            do(%#counter%)
+                GETSLOT(%&chestitem%,#eslot,0)
+                //Log(Item Slot : %#eslot%)
+                getslotitem(%#eslot%,&secitem)
+                //Log(%#eslot%,(%&chestitem% - %&secitem% )
+                slotclick(%#eslot%,l,true)
+                //Log(%&chestitem%=%&secitem%)
+            loop
+            Log(> &elootChest.txt &7| &f%#counter% %&chestitem% collected !)
+        ENDIF
+    LOOP
+
+ELSEIF(%GUI%=="NONE")
+    LOG("> &elootChest.txt &7|  &cChest GUI not found")
+    LOG("> &elootChest.txt &7|  You need to be inside a chest inventory for this script to work")
+    BREAK
+ELSE
+    LOG("> &elootChest.txt &7|  &cChest GUI not found")
+    LOG("> &elootChest.txt &7|  You need to be inside a chest inventory for this script to work")
+    BREAK
+ENDIF
+// EXIT
+   gui()
+//=======================================
+
