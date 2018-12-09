@@ -54,4 +54,4 @@ LOOP
     wait(5000ms)
     log(&7Teleported!)
 LOOP
-LOOP
+
