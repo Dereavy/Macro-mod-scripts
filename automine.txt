@@ -40,7 +40,15 @@ LOOP
 
 // Stuff to do when the player has moved
     log(&6Exit)
-    BREAK
-    //echo(/tp Lezappen %#xpos% %#ypos% %#zpos%)
-    //wait(5000ms)
+    //BREAK
+    log(&cMovement detected, &7teleporting back in:)
+    wait(500ms)
+    log(&73)
+    wait(500ms)
+    log(&72)
+    wait(500ms)
+    log(&71)
+    wait(500ms)
+    echo(/tp Lezappen %#xpos% %#ypos% %#zpos%)
+    wait(5000ms)
 LOOP
