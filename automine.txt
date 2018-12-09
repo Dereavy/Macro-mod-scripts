@@ -41,6 +41,6 @@ LOOP
 // Stuff to do when the player has moved
     log(&6Exit)
     BREAK
-    //echo(/tp Lezappen 15 78 317)
+    //echo(/tp Lezappen #xpos #ypos #zpos)
     //wait(5000ms)
 LOOP
