@@ -50,5 +50,8 @@ LOOP
     log(&71)
     wait(500ms)
     echo(/tp Lezappen %#xpos% %#ypos% %#zpos%)
+    log(&7Teleporting..)
     wait(5000ms)
+    log(&7Teleported!)
+LOOP
 LOOP
