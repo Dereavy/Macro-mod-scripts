@@ -1,0 +1,46 @@
+#zpos = ZPOS 
+#xpos = XPOS
+#ypos = YPOS
+DO()
+
+//Fixes the location of the player
+log(&6Location fixed at:&b X:%XPOS%, Y:%YPOS%, Z:%ZPOS%)
+
+//Countdown
+log(&7Automining in:)
+wait(500ms)
+log(&73)
+wait(500ms)
+log(&72)
+wait(500ms)
+log(&71)
+wait(500ms)
+log(&7mining....)
+
+
+// Loop that does stuff while you are not moving
+DO()
+    // Checks to make sure you don't move
+    wait(1s)
+    IF(XPOS!=%#xpos%)
+        //log("BREAK X")
+        BREAK
+    ELSEIF(YPOS!=%#ypos%)
+        //log("BREAK Y")
+        BREAK
+    ELSEIF(ZPOS!=%#zpos%)
+        //log("BREAK Z")
+        BREAK
+    ENDIF 
+    
+    // Stuff to do while you are not moving
+    key(attack)
+
+LOOP
+
+// Stuff to do when the player has moved
+    log(&6Exit)
+    BREAK
+    //echo(/tp Lezappen 15 78 317)
+    //wait(5000ms)
+LOOP
