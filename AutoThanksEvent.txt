@@ -1,6 +1,4 @@
 STRIP(&chat, %CHAT%)
-
-STRIP(&chat, %CHAT%)
 &target = null
 MATCH(%&chat%,\s?(\w*)(?:\shas activated),&target,1)
 LOG("/thanks "%&target%)
