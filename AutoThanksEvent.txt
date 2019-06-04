@@ -1,4 +1,11 @@
 STRIP(&chat, %CHAT%)
+
+
 &target = null
-MATCH(%&chat%,\s?(\w*)(?:\shas activated),&target,1)
-LOG("/thanks "%&target%)
+
+ifmatches(%&chat%,\s?(\w*)(?:\shas activated))
+
+    MATCH(%&chat%,\s?(\w*)(?:\shas activated),&target,1)
+    echo("./thanks "%&target%)
+    
+endif
