@@ -1,4 +1,0 @@
-STRIP(&chat, %CHAT%)
-&target = null
-MATCH(%&chat%,\s?(\w*)(?:\shas activated),&target,1)
-ECHO("/thanks "%&target%)
