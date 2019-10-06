@@ -1,0 +1,10 @@
+
+STRIP(&chat, %CHAT%)
+
+LOGTO("Log.txt",%DATE% %TIME%: %&chat%)
+
+ifmatches(%&chat%,\s?(\w*)(?:\shas activated))
+    MATCH(%&chat%,\s?(\w*)(?:\shas activated),&target,1)
+    echo("/thanks "%&target%)
+endif
+
