@@ -1,6 +1,7 @@
 #zpos = ZPOS 
 #xpos = XPOS
 #ypos = YPOS
+
 DO()
 
 //Fixes the location of the player
@@ -54,4 +55,3 @@ LOOP
     wait(5000ms)
     log(&7Teleported!)
 LOOP
-
