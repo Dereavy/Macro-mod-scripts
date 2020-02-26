@@ -1,0 +1,25 @@
+
+// Coordinates of the centre of the ghast farm
+#XCO=-137
+#ZCO=-185
+
+// commands to execute for when the script fails
+@&commands[0]="/command 1"
+@&commands[1]="/command 2"
+@&commands[2]="/command 3"
+
+SET(@autorestart,true)
+
+SET(#ypos,%YPOS%)
+RANDOM(#charge,20,24)
+DO()
+keydown(left)
+    FOR(#counter,1,%#charge%)
+        CALCYAWTO(%#XCO%,%ZCO%,#cyaw,#distance)
+        INC(#cyaw,180);LOOK(%#cyaw%);key(use)
+    NEXT
+WHILE(%YPOS%==%#ypos%)
+keyup(left)
+if(@autorestart)
+    EXEC("autoaimghastfailsafe.txt")
+endif
