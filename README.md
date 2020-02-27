@@ -2,8 +2,10 @@
 - Macro mod scripts made by Lezappen#5787
 Not all scripts I make are featured here, feel free to contact me for more information.
 
-## Installation :
+## Installation of the macro mod:
 https://youtu.be/fNfj2F8Gilg
+## Installing scripts:
+https://youtu.be/JTquaFWy0Dg
 
 ### INSTRUCTIONS:
 - Launch minecraft in 1.12.2 so it generates folders then close it.
