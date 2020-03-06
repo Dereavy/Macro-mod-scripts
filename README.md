@@ -1,6 +1,7 @@
 # Macro-mod-scripts
 - Macro mod scripts made by Lezappen#5787
 Not all scripts I make are featured here, feel free to contact me for more information.
+Discord: https://discord.gg/M8eypZg
 
 ## Installation of the macro mod:
 https://youtu.be/fNfj2F8Gilg
@@ -26,8 +27,12 @@ https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/minecraft
 
 ## SCRIPTS:
 My public scripts repository: https://github.com/Dereavy/Macro-mod-scripts
-Commissions (Fiverr): https://www.fiverr.com/share/xXLReZ 
+
 Premium scripts: https://discord.gg/M8eypZg
+
+Commissions (Fiverr): https://www.fiverr.com/share/xXLReZ 
+
+
 
 ## TUTORIAL REQUESTS
 Tutorial requests (Fiverr): https://www.fiverr.com/share/yv6RV6
