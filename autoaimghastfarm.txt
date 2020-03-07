@@ -18,7 +18,6 @@ keydown(left)
         CALCYAWTO(%&xco%,%&zco%,#cyaw,#distance)
         INC(#cyaw,180);
         LOOK(%#cyaw%);key(use)
-        LOG(%&xco%,%&zco% > %#cyaw%)
     NEXT
 WHILE(%YPOS%==%#ypos%)
 keyup(left)
