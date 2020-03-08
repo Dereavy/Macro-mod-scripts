@@ -11,6 +11,9 @@
 SET(@autorestart,true)
 
 SET(#ypos,%YPOS%)
+if(@autorestart)
+    EXEC("autoaimghastfailsafe.txt")
+endif
 RANDOM(#charge,20,24)
 DO()
 keydown(left)
@@ -19,9 +22,7 @@ keydown(left)
         INC(#cyaw,180);
         LOOK(%#cyaw%);key(use)
     NEXT
-WHILE(%YPOS%==%#ypos%)
+UNTIL(%@ghastalarm%)
 keyup(left)
-if(@autorestart)
-    EXEC("autoaimghastfailsafe.txt")
-endif
+
 
