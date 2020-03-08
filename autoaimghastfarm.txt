@@ -11,9 +11,6 @@
 SET(@autorestart,true)
 
 SET(#ypos,%YPOS%)
-if(@autorestart)
-    EXEC("autoaimghastfailsafe.txt")
-endif
 RANDOM(#charge,20,24)
 DO()
 keydown(left)
@@ -21,8 +18,19 @@ keydown(left)
         CALCYAWTO(%&xco%,%&zco%,#cyaw,#distance)
         INC(#cyaw,180);
         LOOK(%#cyaw%);key(use)
+        LOG(%&xco%,%&zco% > %#cyaw%)
     NEXT
-UNTIL(%@ghastalarm%)
+    if((%YPOS%+1)<#ypos)
+        set(safe,1)
+        BREAK;
+    endif
+    if((%YPOS%-1)>#ypos)
+        set(safe,1)
+        BREAK;
+    endif
+WHILE(%safe%)
 keyup(left)
-
-
+set(safe,False)
+if(@autorestart)
+    EXEC("autoaimghastfailsafe.txt")
+endif
