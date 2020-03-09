@@ -44,3 +44,7 @@ if(@autorestart)
     endif
 endif
 
+//  Credits:
+//  Made by Lezappen#7587
+//  Discord: https://discord.gg/M8eypZg
+//  Youtube: https://www.youtube.com/channel/UCIPGEO89HvJBFQ01M56Yqcw
