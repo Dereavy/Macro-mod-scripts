@@ -28,7 +28,7 @@ keydown(left)
         set(safe,1)
         BREAK;
     endif
-WHILE(%safe%)
+UNTIL(%safe%)
 keyup(left)
 set(safe,False)
 if(@autorestart)
