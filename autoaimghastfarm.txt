@@ -1,3 +1,4 @@
+
 // Coordinates of the centre of the ghast farm
 &xco="-137"
 &zco="-185"
@@ -7,18 +8,28 @@
 @&commands[1]="/command 2"
 @&commands[2]="/command 3"
 
+// Sets the shot rarity between min and max (randomised)
+SET(#srmin,8)
+SET(#srmax,12)
+
+
 SET(@autorestart,true)
 
 SET(#ypos,%YPOS%)
 RANDOM(#charge,20,24)
+#count=0
 DO()
+RANDOM(#sr,#srmin,#srmax)
+#amt = #count+1-((#count/%#sr%)*%#sr%)
+INC(#count)
 keydown(left)
+if(#amt=#sr)
     FOR(#counter,1,%#charge%)
         CALCYAWTO(%&xco%,%&zco%,#cyaw,#distance)
         INC(#cyaw,180);
-        LOOK(%#cyaw%);key(use)
-        LOG(%&xco%,%&zco% > %#cyaw%)
+        LOOK(%#cyaw%,0.5);key(use)
     NEXT
+endif
     if((%YPOS%+1)<#ypos)
         set(safe,1)
         BREAK;
@@ -33,8 +44,3 @@ set(safe,False)
 if(@autorestart)
     EXEC("autoaimghastfailsafe.txt")
 endif
-
-//  Credits:
-//  Made by Lezappen#7587
-//  Discord: https://discord.gg/M8eypZg
-//  Youtube: https://www.youtube.com/channel/UCIPGEO89HvJBFQ01M56Yqcw
