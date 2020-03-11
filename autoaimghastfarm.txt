@@ -20,9 +20,8 @@ RANDOM(#charge,20,24)
 #count=0
 DO()
 RANDOM(#sr,%#srmin%,%#srmax%)
-#amt = #count+1-((#count/%#sr%)*%#sr%)
+#amt = (#count-((#count/%#sr%)*%#sr%))+1
 INC(#count)
-LOG(%#amt% - %#sr%)
 keydown(left)
 if(#amt=#sr)
     FOR(#counter,1,%#charge%)
@@ -30,6 +29,7 @@ if(#amt=#sr)
         INC(#cyaw,180);
         LOOK(%#cyaw%,,0)
         ;key(use)
+        #count=0
     NEXT
 endif
     if((%YPOS%+1)<#ypos)
