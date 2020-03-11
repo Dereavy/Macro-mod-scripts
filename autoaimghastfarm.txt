@@ -9,8 +9,8 @@
 @&commands[2]="/command 3"
 
 // Sets the shot rarity between min and max (randomised)
-SET(#srmin,8)
-SET(#srmax,12)
+SET(#srmin,50)
+SET(#srmax,60)
 
 
 SET(@autorestart,true)
@@ -19,15 +19,17 @@ SET(#ypos,%YPOS%)
 RANDOM(#charge,20,24)
 #count=0
 DO()
-RANDOM(#sr,#srmin,#srmax)
+RANDOM(#sr,%#srmin%,%#srmax%)
 #amt = #count+1-((#count/%#sr%)*%#sr%)
 INC(#count)
+LOG(%#amt% - %#sr%)
 keydown(left)
 if(#amt=#sr)
     FOR(#counter,1,%#charge%)
         CALCYAWTO(%&xco%,%&zco%,#cyaw,#distance)
         INC(#cyaw,180);
-        LOOK(%#cyaw%,0.5);key(use)
+        LOOK(%#cyaw%,,0)
+        ;key(use)
     NEXT
 endif
     if((%YPOS%+1)<#ypos)
