@@ -1,0 +1,28 @@
+// The sword type that you are using:
+
+&sword="diamond_sword"
+
+
+// Time spent with the sword in hand before changing back
+#swordtime=1000
+
+TOGGLE(@bowswitch)
+set(before,False)
+do()
+
+    pressed=%RMOUSE%
+    if(before=1)
+        if(pressed=0)
+            GETSLOTITEM(%INVSLOT%,&item)
+            if(&item="bow")
+                GETSLOT(%&sword%,#swordslot)
+                SLOT(%#swordslot%)
+                wait(%#swordtime%ms)
+                GETSLOT("bow",#bowslot)
+                SLOT(%#bowslot%)
+            endif        
+        endif
+    endif
+
+    before=pressed
+while(@bowswitch)
