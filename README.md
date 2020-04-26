@@ -30,10 +30,10 @@ My public scripts repository: https://github.com/Dereavy/Macro-mod-scripts
 
 Premium scripts: https://discord.gg/M8eypZg
 
-Commissions (Fiverr): https://www.fiverr.com/share/xXLReZ 
+Commissions: https://discord.gg/M8eypZg
 
 
 
 ## TUTORIAL REQUESTS
-Tutorial requests (Fiverr): https://www.fiverr.com/share/yv6RV6
+Tutorial requests: https://discord.gg/M8eypZg
 Discord: https://discord.gg/M8eypZg
