@@ -16,6 +16,7 @@ https://youtu.be/JTquaFWy0Dg
 - Launch minecraft 1.12.2 with the Forge + Liteloader profile so it generates folders then close it.
 - Add the macro mod liteloader mod to the minecraft mods folder.
 - Run the game.
+- Bind scripts to macros with `$${$$<scriptname.txt>}$$`
 
 ## DOWNLOADS:
 Forge MC: 
