@@ -1,0 +1,32 @@
+if(z);log("&4 OFF");unset(z);keyup(jump);keyup(forward);keyup(back);keyup(left);keyup(right);keyup(sneak);stop();else;set(z);log("&2 ON");endif;
+&dire=%DIRECTION%;
+ifmatches(%&dire%,N);look(0,60,0.5);endif;ifmatches(%&dire%,S);look(180,60,0.5);endif;ifmatches(%&dire%,E);look(90,60,0.5);endif;ifmatches(%&dire%,W);look(180,60,0.5);endif;
+look(-90,60,0.5);
+if(%HITID%="chest");
+    key(use);do();until(%GUI%!="NONE");wait(3t);
+    for(#chest,0,26);getslotitem(%#chest%,&id,#amount,#data);if(%&id%="ice");slotclick(%#chest%,left,true);wait(1t);endif;next();
+    gui();
+endif;
+
+look(-90,86,0.5);
+#posx=%XPOS%;#posz=%ZPOS%;
+do;pick(ice);keydown(back);keydown(sneak);key(use);
+until((%XPOS%=%#posx%+1)|(%XPOS%=%#posx%-1)|(%ZPOS%=%#posz%+1)|(%ZPOS%=%#posz%-1));
+keyup(back);wait(1t);key(use);keyup(sneak);
+look(+90,85,0.5);#num=1;
+do();
+    for(#loop,0,3);
+        #posx=%XPOS%;#posz=%ZPOS%;
+        do;pick(ice);keydown(back);keydown(sneak);key(use);#ypos=%YPOS%-1;;getid(%XPOS%,%#ypos%,%ZPOS%,&block,#dtata);
+        until((%&block%!="ice")&&(%&block%!="water"));
+        keyup(back);wait(1t);key(use);keyup(sneak);
+        
+        #posx=%XPOS%;#posz=%ZPOS%;
+        do;keydown(sneak);keydown(forward);
+        until((%XPOS%=%#posx%+%#num%)|(%XPOS%=%#posx%-%#num%)|(%ZPOS%=%#posz%+%#num%)|(%ZPOS%=%#posz%-%#num%));
+        keyup(forward);keyup(sneak);
+        look(-90,85,0.5);
+    next;
+    inc(#num,1);
+while(true);
+unset(z);stop();

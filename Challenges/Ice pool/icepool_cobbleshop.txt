@@ -1,0 +1,246 @@
+$${
+//Checking the gamemode. If it's not Survival, it'll change to survival.
+IF(%GAMEMODE% != "SURVIVAL");
+	ECHO("/gamemode 0");
+ENDIF;
+
+UNSAFE();
+	UNSET(#ice_in_inv_counter);
+	UNSET(#ice_in_chest_counter);
+	UNSET(#counter);
+	UNSET(@direction);
+	
+	#ice_goal = 91;
+	#chest_slot_start = 0;
+	#chest_slot_end = 26;
+	#inv_slot_start = 9;
+	#inv_slot_end = 44;
+	#max_stack_count_needed = 3;
+	
+	
+	//Checking the start-position + storing it into variables.
+	GETIDREL(~,-1,~,&idvar);
+	IF(&idvar != "stone");
+		LOG("&8[&6Ice-Placer&8] &7The script will auto-start once you stand on the stone-block.");
+		DO;
+			GETIDREL(~,-1,~,&idvar);
+		UNTIL(&idvar = "stone");
+	ENDIF;
+	
+	#start_xpos = %XPOS%;
+	#start_ypos = %YPOS%;
+	#start_zpos = %ZPOS%;
+	
+	LOG("&8[&6Ice-Placer&8] &7Script will start in &62 &7seconds. Please don't move the mouse.");
+	WAIT(2);
+	
+	LOG("&8[&6Ice-Placer&8] &7Counting the amount of ice in the inventory.");
+	GUI(inventory);
+	FOR(#slotid,9,44);
+		GETSLOTITEM(%#slotid%,&idvar,#stacksize);
+		IF(&idvar == "ice");
+			INC(#ice_in_inv_counter,%#stacksize%);
+		ENDIF;
+	NEXT;
+	PRESS(escape);
+	DO;
+	UNTIL(GUI="NONE");
+	
+	//If there is less ice than needed:;
+	IF(#ice_in_inv_counter < 91);
+		LOG("&8[&6Ice-Placer&8] &7I don't have enough ice. Maybe there's some ice in the chest?");
+		LOOK(270,16,0.5);
+		KEY(use);
+		DO;
+		UNTIL(GUI="GUICHEST");
+		
+		FOR(#chestslot,0,26);
+			GETSLOTITEM(%#chestslot%,&idvar,#stacksize);
+			IF(&idvar == "ice");
+				INC(#ice_in_chest_counter,%#stacksize%);
+			ENDIF;
+		NEXT;
+		
+		IF(#ice_in_chest_counter >= 91);
+			LOG("&8[&6Ice-Placer&8] &7I'll put the ice into the inventory now.");
+			FOR(#chestslot,0,26);
+				GETSLOTITEM(%#chestslot%,&idvar,#stacksize);
+				IF((&idvar == "ice") && (#stacksize == 64));
+					SLOTCLICK(%#chestslot%,left,true);
+					WAIT(10t);
+					INC(#counter);
+					IF(#counter == %#max_stack_count_needed%);
+						BREAK;
+					ENDIF;
+				ENDIF;
+			NEXT;
+		ENDIF;
+		
+		IF(#ice_in_chest_counter = 0);
+			LOG("&8[&6Ice-Placer&8] &7No Ice found in the chest. Executing /give command...");
+			
+			DO(4);
+				ECHO("/give %PLAYER% ice 64");
+				WAIT(10t);
+			LOOP;
+			LOG("&8[&6Ice-Placer&8] &7Going to place the Ice in to the chest now.");
+			DO(4);
+				getslot(ice,#slotid,27);
+				SLOTCLICK(%#slotid%,left,true);
+				WAIT(15t);
+			LOOP;
+			LOG("&8[&6Ice-Placer&8] &7Going to put the ice back into the inventory.");
+			
+			DO(4);
+				getslot(ice,#slotid,0);
+				SLOTCLICK(%#slotid%,left,true);
+				WAIT(15t);
+			LOOP;
+		ENDIF;
+	ENDIF;
+	
+	IF(GUI="GUICHEST");
+		PRESS(escape);
+		DO;
+		UNTIL(GUI="NONE");
+	ENDIF;
+	
+	LOG("&8[&6Ice-Placer&8] &7Going to position myself.");
+	
+	IF(YPOS > %#start_ypos% +1);
+		DO;
+			KEYDOWN(sneak);
+			WAIT(1t);
+			KEYUP(sneak);
+			WAIT(1t);
+		UNTIL(YPOS = %#start_ypos% +1);
+	ENDIF;
+	
+	
+	DO;
+		LOOK(west,0);
+		KEYDOWN(forward);
+	UNTIL(XPOS == %#start_xpos% - 3);
+	KEYUP(forward);
+	
+	FOR(#row,2,-4);
+		TOGGLE(@direction);
+		IF(@direction);
+			&direction = "north";
+			&direction_short = "n";
+			&direction_walk = "left";
+			#yaw = 180;
+			&key_z = "back";
+			#length = %ZPOS% - 14;
+		ELSE;
+			&direction = "south";
+			&direction_short = "s";
+			&direction_walk = "right";
+			#yaw = 0;
+			&key = "forward";
+			#length = %ZPOS% + 14;
+		ENDIF;
+		
+		//Center Player:;
+		
+		IF(%DIRECTION% == "N");
+			&forward = "forward";
+			&back = "back";
+			&left = "left";
+			&right = "right";
+		ELSEIF(%DIRECTION% == "S");
+			&forward = "back";
+			&back = "forward";
+			&left = "right";
+			&right = "left";
+		ELSEIF(%DIRECTION% == "E");
+			&forward = "left";
+			&back = "right";
+			&left = "back";
+			&right = "forward";
+		ELSEIF(%DIRECTION% == "W");
+			&forward = "right";
+			&back = "left";
+			&left = "forward";
+			&right = "back";
+		ENDIF;
+		
+		UNSET(&xposf[]);
+		SPLIT(".",%XPOSF%,&xposf[]);
+		SET(#xpos_fine,%&xposf[1]%);
+		KEYDOWN(sneak);
+		
+		IF(#xpos_fine < 450);
+			DO;
+				UNSET(&xposf[]);
+				SPLIT(".",%XPOSF%,&xposf[]);
+				SET(#xpos_fine,%&xposf[1]%);
+				KEYDOWN(%&left%);
+			UNTIL((#xpos_fine > 450) && (#xpos_fine < 550));
+			KEYUP(%&left%);
+		ELSE;
+			DO;
+				UNSET(&xposf[]);
+				SPLIT(".",%XPOSF%,&xposf[]);
+				SET(#xpos_fine,%&xposf[1]%);
+				KEYDOWN(%&right%);
+			UNTIL((#xpos_fine > 450) && (#xpos_fine < 550));
+			KEYUP(%&right%);
+		ENDIF;
+		
+		SPLIT(".",%ZPOSF%,&zposf[]);
+		SET(#zpos_fine,%&zposf[1]%);
+		
+		IF(#zpos_fine < 450);
+			DO;
+				UNSET(&zposf[]);
+				SPLIT(".",%ZPOSF%,&zposf[]);
+				SET(#zpos_fine,%&zposf[1]%);
+				KEYDOWN(%&back%);
+			UNTIL((#zpos_fine > 450) && (#zpos_fine < 550));
+			KEYUP(%&back%);
+		ELSE;
+			DO;
+				UNSET(&zposf[]);
+				SPLIT(".",%ZPOSF%,&zposf[]);
+				SET(#zpos_fine,%&zposf[1]%);
+				KEYDOWN(%&forward%);
+			UNTIL((#zpos_fine > 450) && (#zpos_fine < 550));
+			KEYUP(%&forward%);
+		ENDIF;
+		KEYUP(sneak);
+		
+		DO;
+			KEYDOWN(sneak);
+			LOOK(%#yaw%,80,0.3);
+			KEYDOWN(%&key_z%);
+			PICK(ice);
+			KEY(use);
+		UNTIL(ZPOS == %#length%);
+		KEYUP(%&key_z%);
+		
+		DO;
+			KEYDOWN(%&direction_walk%);
+		UNTIL(XPOS == %#start_xpos% - %#row%);
+		KEYUP(%&direction_walk%);
+		WAIT(3t);
+	NEXT;
+	KEYUP(sneak);
+	
+	LOG("&8[&6Ice-Placer&8] &7That was easy. :-D");
+
+	camera(3)
+	WAIT(10t)
+	LOOK(36,331,1)
+
+	DO(10)
+		KEYDOWN(sneak)
+		WAIT(3t)
+		KEY(attack)
+		KEYUP(sneak)
+		WAIT(3t)
+	LOOP
+
+ENDUNSAFE;
+
+}$$

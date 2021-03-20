@@ -1,0 +1,380 @@
+$${
+
+unset(fill_pool);
+
+
+prompt(&opt,"$$[option[1. - Put all required items into the chest,,2. - Start the pool-filling macro]]","First, select 1., after that select 2. to start the macro.",true,"");
+
+if(&opt == "1. - Put all required items into the chest");
+	set(chest_filler);
+
+elseif(&opt == "2. - Start the pool-filling macro");
+	set(fill_pool);
+else;
+	log("&cNo valid option has been selected.");
+	stop;
+endif;
+
+
+
+
+title("&9Pool-Filler","&fMake sure to be close to the starting block to locate the starting block.",10,60,10);
+clearchat();
+log("&9 Pool-Filler > &eStarting Pool-filling macro...");
+unset(fill);
+
+
+// Get the entry position where the player needs to be in order to start the macro (the stone block)
+
+unsafe(0);
+	do;
+		// Unsetting variables which will be used in the script to make sure there isn't any data from older sessions left.
+		unset(&wool_colors[]);
+		unset(&starting_block_order[]);
+		unset(start_block_found);
+
+
+
+		// Convert datavar of wool blocks to the displayed color's name
+		&wool_colors[] = split("-","Orange:1-Magenta:2-Light Blue:3-Yellow:4-Lime:5-Pink:6-Gray:7-Light Gray:8-Cyan:9-Purple:10-Blue:11-Brown:12-Green:13-Red:14-Black:15");
+
+
+		for(#x,-10,10);
+			for(#y,-3,3);
+				for(#z,-10,10);
+					getidrel(%#x%,%#y%,%#z%,&id);
+					if(&id == "stone");
+
+						// Calculate real location of the block from relative values.
+						#x_block = XPOS + #x;
+						#y_block = YPOS + #y;
+						#z_block = ZPOS + #z;
+
+						unset(&starting_block_order[]);
+						unset(#start_xpos);
+						#start_xpos = #x_block - 5;
+
+						join("-",&wool_colors[],&colors);
+						do(11);
+							getid(%#start_xpos%,%#y_block%,%#z_block%,&block_id,#data);
+							if(&block_id == "wool");		
+								match(%&colors%,"(\w+):%#data%",&color,1,"White");
+							else;
+								unset(&color);
+							endif;
+
+							if(&color != "");
+							 	push(&starting_block_order[],"X %#x_block% Y %#y_block% Z %#z_block%/%&block_id%-%&color%");
+							else;
+								push(&starting_block_order[],"X %#x_block% Y %#y_block% Z %#z_block%/%&block_id%");
+							endif;
+							inc(#start_xpos);
+						loop;
+
+						join("",&starting_block_order[],&order);
+						match(%&order%,"/stoneX (-?\d+) Y (-?\d+) Z (-?\d+)",{#stone_x,#stone_y,#stone_z});
+						regexreplace(&order,"(X\s(?:-?\d+)\sY\s(?:-?\d+)\sZ\s(?:-?\d+))");
+
+						if(&order == "/ice/wool-Yellow/wool-Black/wool-Yellow/wool-Black/stone/wool-Black/wool-Yellow/wool-Black/wool-Yellow/ice");
+							set(start_block_found);
+						endif;
+					endif;
+				next;
+				if(start_block_found);
+					break;
+				endif;
+			next;
+			if(start_block_found);
+				break;
+			endif;
+		next;
+
+		if(start_block_found);
+			clearchat();
+			log("&9Pool-Filler > &aSuccessfully located the starting stone block &7at the following coordinates:");
+			log("");
+			log("&9Pool-Filler > &6[X] &d%#stone_x% &6[Y] &d%#stone_y% &6[Z] &d%#stone_z%");
+			log("");
+			getidrel(0,-1,0,&id);
+			if(&id != "stone");
+				#player_y = #stone_y + 1;
+				clearchat();
+				log("&9Pool-Filler > &ePlease move to the following coordinates and then restart the macro.");
+				log("");
+				log("&9Pool-Filler > &6[X] &d%#stone_x%");
+				log("&9Pool-Filler > &6[Y] &d%#player_y%");
+				log("&9Pool-Filler > &6[Z] &d%#stone_z%");
+			else;
+				clearchat();
+				log("");
+				log("&9Pool-Filler > &aYou are standing on the starting stone block.");
+				set(chest);
+			endif;
+			break;
+		else;
+			clearchat();
+			log("&9Pool-Filler > &cUnable to locate the starting stone block. &7Double check if you are in the radius of a valid pool-design.");
+			log("");
+			log("&9Pool-Filler > &eYou must be on the starting stone block to make this macro work properly.");	
+			break;
+		endif;
+	loop;
+endunsafe;
+
+
+if(chest);
+
+	if(chest_filler);
+		clearchat();
+		log("&9Pool-Filler > &eClearing out inventory...");
+		look("south",0.2);
+		do;
+			gui(inventory);
+		until(GUI == "GUIINVENTORY");
+		wait(5t);
+		unsafe;
+			for(#i,0,%CONTAINERSLOTS%);
+				getslotitem(%#i%,&id);
+				if(&id != "air");
+					slotclick(%#i%);
+					wait(1t);
+					slotclick(-999);
+					wait(5t);
+				endif;
+			next;
+		endunsafe;
+
+		do;
+			gui();
+		until(GUI == "NONE");
+
+		unset(&required_items[]);
+		&required_items[] = split(",","/give @p ice 64,/give @p ice 64,/give @p ice 64,/give @p ice 64,/give @p ice 64,/give @p ice 64,/give @p ice 64,/give @p ice 64,/give @p ice 64,/give @p milk_bucket,/give @p milk_bucket,/give @p milk_bucket,/give @p milk_bucket,/give @p milk_bucket");
+
+		arraysize(&required_items[],#size);
+		clearchat();
+		log("&9Pool-Filler > &eAttempting to give the player a total amount of items which will fill &d%#size% &eslots in his inventory.");
+
+		foreach(&required_items[],&temp,#index);
+			clearchat();
+			log("&9Pool-Filler > &eAttempting to execute the following command (Cheats required, otherwise insert the items manually into the chest.)");
+			log("");
+			lograw(["",{"text":"Pool-Filler >","color":"blue"},{"text":"[CLICK HERE] ","color":"green","clickEvent":{"action":"open_url","value":"https://gyazo.com/0c2d0ebfb7356f8cda1d5f2174cf7300"},"hoverEvent":{"action":"show_text","value":{"text":"","extra":[{"text":"This link will redirect you to a picture of the required chest contents.","color":"gray"}]}}},{"text":"for a link to the chest contents if you don't want to enable cheats.","color":"yellow"}]);
+			log("")
+			log("&9Pool-Filler > &eCommand: &d%&temp%");
+			echo(%&temp%);
+			wait(5t);
+		next;
+
+		getidrel(-4,0,0,&id);
+		if(&id == "chest");
+			#x = XPOS -4;
+			calcyawto(%#x%,%ZPOS%,#yaw,#dist);
+			inc(#yaw,180);
+			look(%#yaw%,17,0.1);
+			wait(5t);
+		else;
+			look("west",0.1);
+			look(,17,0.1);
+			wait(5t);
+		endif;
+		do;
+			key(use);
+		until(GUI == "GUICHEST");
+		wait(10t);
+		unsafe;
+			for(#i,27,62);
+				getslotitem(%#i%,&id);
+				ifmatches(%&id%,"^(?:(ice)|(milk_bucket))$");
+					slotclick(%#i%,left,true);
+					wait(5t);
+				endif;
+			next;
+		endunsafe;
+
+		look("north",0.5);
+		do;
+			gui();
+		until(GUI == "NONE");
+
+		log("");
+		log("&9Pool-Filler > &eChest-Filling process complete.");
+		stop;
+	endif;
+
+
+	getidrel(-4,0,0,&id);
+	if(&id == "chest");
+		#x = XPOS -4;
+		calcyawto(%#x%,%ZPOS%,#yaw,#dist);
+		inc(#yaw,180);
+		look(%#yaw%,17,0.1);
+		wait(5t);
+	else;
+		look("west",0.1);
+		look(,17,0.1);
+		wait(5t);
+	endif;
+	do;
+		key(use);
+	until(GUI == "GUICHEST");
+
+	unsafe;
+		for(#i,54,62);
+			getslotitem(%#i%,&id);
+			if(&id != "ice");
+				slotclick(%#i%,left,true);
+				wait(3t);
+			endif;		
+		next;
+		
+		// CHECK FOR EFFECTS WHICH COULD BREAK THE MACRO FUNCTIONALITY
+		foreach(effects);
+			if(EFFECTNAME != "");
+				clearchat();
+				log("&9Pool-Filler > &eThere are potion effects active. Drinking &fmilk &eto remove them...");
+				for(#i,0,26);
+					getslotitem(%#i%,&id);
+					if(&id == "milk_bucket");
+						slotclick(%#i%,left,true);
+						break;
+					endif;
+				next;
+					
+				do;
+					gui();
+				until(GUI == "NONE");
+				look(0,90,0.1);
+				wait(5t);
+				do;
+					pick(milk_bucket);
+					key(use);
+					unset(&effects[]);
+					foreach(effects);
+						put(&effects[],&temp,#index);
+					next;
+					arraysize(&effects[],#size);
+					if(#size > 0);
+					else;
+						clearchat();
+						log("&9Pool-Filler > &aAll potion effects cleared.");
+						break;
+					endif;
+				loop;
+			endif;
+		next;
+		clearchat();
+		log("&9Pool-Filler > &eIf there have been any active effects, they're all cleared now.");
+		log("&9Pool-Filler > &eRetrieving ice blocks from the chest...")
+
+		for(#i,0,26);
+			getslotitem(%#i%,&id,#stack);
+			if(&id == "ice");
+				slotclick(%#i%,left,true);
+				wait(3t);
+			endif;
+		next;
+	endunsafe;
+	
+	set(fill);
+endif;
+
+
+if(fill);
+	look("south",0.2);
+	look(,82,0.2);
+	do;
+		gui();
+	until(GUI == "NONE");
+	wait(2t);
+	keydown(sneak);
+	keydown(back);
+	do;	
+		pick(ice);	
+		#hit = YPOS - 1;
+		do;
+		until(HITY == #hit);
+		key(use);
+		do;
+		until(HITY == #hit);
+		ifmatches(%HITID%,"(ice|stone)");
+		else;
+			keyup(back);
+			keyup(sneak);
+			clearchat();
+			log("&9Pool-Filler > &cThe next block isn't a water block.");
+			break;
+		endif;
+	loop;
+
+	do;
+		#z = ZPOS + 1;
+		look("south",0.1);
+		keydown(forward);
+		do;
+			wait(2t);
+			keydown(sneak);
+		until(ZPOS == #z);
+		keyup(forward);
+		keyup(sneak);
+
+		if(ZPOS == #stone_z);
+			clearchat();
+			log("&9Pool-Filler > &aReached the end of the pool.");
+			log("");
+			getidrel(-4,0,0,&id);
+			if(&id == "chest");
+				#x = XPOS -4;
+				calcyawto(%#x%,%ZPOS%,#yaw,#dist);
+				inc(#yaw,180);
+				look(%#yaw%,17,0.1);
+				wait(5t);
+			else;
+				look("west",0.1);
+				look(,17,0.1);
+				wait(5t);
+			endif;
+
+			do;
+				key(use);
+			until(GUI == "GUICHEST");
+			wait(5t);
+			unsafe;	
+				for(#i,27,62);
+					slotclick(%#i%,left,true);
+					wait(3t);
+				next;	
+			endunsafe;	
+
+			look("north",0.2);
+			do;
+				gui();
+			until(GUI == "NONE");
+			
+			break;
+		endif;
+
+		do(2);
+			toggle(bool);
+			if(bool);
+				&yaw = "west";
+			else;
+				&yaw = "east";
+			endif;
+			look(%&yaw%,0.1);
+			wait(2t);
+			#pitch = 30;
+
+			do(3);
+				look(,%#pitch%,0.1);
+				pick(ice);
+				wait(2t);
+				key(use);
+				inc(#pitch,10);
+			loop;
+		loop;
+	loop;
+	log("&9Pool-Filler > &eThe pool-filling process &ahas been finished.");
+endif;
+
+}$$
