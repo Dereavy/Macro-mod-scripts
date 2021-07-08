@@ -1,0 +1,93 @@
+#start = time(,"mmssSSS")
+
+&scores[] = split(""," abcdefghijklmnopqrstuvwxyz()")
+
+gui(inventory)
+
+do;until(GUI == "GUIINVENTORY")
+
+unsafe(0)
+
+// Slots which get sorted
+#min = 9
+#max = 44
+
+do
+	unset(dirty)
+
+	for(#slot,%#min%,%#max%)
+		// Store the positions of each letter in the alphabet for the current item name
+		unset(#current[])
+		// Determines if the script should compare the current score to the previous one
+		set(couldswap)
+		// Gets set when the item name is alphabetically before the previous item 
+		unset(swap)
+		
+		// We don't compare the first item with the previous one, since there is no previous item
+		if(#slot == #min)
+			unset(couldswap)
+		endif
+		
+		// Retrieve the item name for the current slot
+		getslotitem(%#slot%,&id,,#data)
+		&name = getiteminfo(%&id%:%#data%)
+		
+		// Empty slots should always move to the end
+		if(&name == "Air")
+			#current[] = 99
+		else
+			&lname = lcase(%&name%)
+			&characters[] = split("",%&lname%)
+			
+			foreach(&characters[],&char,#i)
+				#score = indexof(&scores[],,%&char%) 
+				
+				if(couldswap)
+					// Compare the current letter with the letter of the previous item at the same position
+					if(#score < #score[%#i%])
+						// If it is "lower", then we know we have to swap it with the previous one
+						set(swap)
+						break
+					elseif(#score > #score[%#i%])
+						// If it is "higher" we know that we no longer have to check each letter, but we still have to calculate each score
+						unset(couldswap)
+					endif
+				endif
+				
+				#current[] = %#score%
+			next
+		endif
+		
+		if(swap)
+			// When we swap the items the score stays the same
+			slotclick(%#slot%)
+			slotclick(%#prev%)
+			slotclick(%#slot%)
+			set(dirty)
+		else
+			// If we don't swap, we have to update the score array with the current values
+			unset(#score[])
+			foreach(#current[],#score)
+				#score[] = %#score%
+			next
+		endif
+		
+		#prev = #slot
+	next
+	
+	// After one iteration the "highest" item will always be in the highest slot
+	// That means that we have one slot less to check in the next iteration
+	dec(#max)
+
+// We can stop once no items had to be swapped
+// The script also stops if the player decides to close the inventory
+while((dirty) && (GUI == "GUIINVENTORY"))
+
+endunsafe
+
+gui()
+
+#end = time(,"mmssSSS")
+#diff = #end - #start
+
+log("&aSorted the inventory in &c%#diff% ms")

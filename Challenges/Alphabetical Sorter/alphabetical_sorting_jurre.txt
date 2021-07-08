@@ -1,0 +1,100 @@
+// 	Alphabetic sorter:
+// 	Made by: Jurre#2096
+//	Readme:
+//		The script will generate a specific amount between 3 and 20
+//		The script looks to the 'itemname' and not the 'itemid'
+//		It only orders the first letter, so if you watch its not fully Alphabetic
+//		The alphabetic order starts in left upper corner or 'Slot 9'
+
+
+&alphabet = "abcdefghijklmnopqrstuvwxyz";
+split("",%&alphabet%,&alphabet[]);
+unset(&item_list[]);
+unset(&item_order[]);
+echo("/clear");
+echo("/gamemode survival");
+wait(3t);
+clearchat();
+log("&5click 'U' to start the script");
+do();
+until(KEY_U == True);
+unset(#itemsgiven);
+allitemsgiven = False;
+do();
+	prompt(#amount_random,$$?,"What is the maximum random items you want to generate? (Between 3 and 15)",true);
+	if((#amount_random < 3) || (#amount_random > 15));
+		log("&4Please select a number or a number between 3 and 15");
+	endif;
+until((#amount_random >= 3) && (#amount_random <= 15));
+do();
+	do(%#amount_random%);
+		random(#itemid_number,450,1);
+		&itemname = itemname(%#itemid_number%);
+		if(&itemname != "");
+			echo("/give @p %&itemname%");
+			inc(#itemsgiven,1);
+		endif;
+	loop;
+	#amount_random = %#amount_random% - %#itemsgiven%;
+	unset(#itemsgiven);
+	if(#amount_random == 0);
+		allitemsgiven = True;
+	endif;
+until(allitemsgiven == True);
+wait(5t);
+slot(1);
+if(MAINHANDITEM != "air");
+	push(&item_list[],"%MAINHANDITEMNAME%");
+endif;
+gui(inventory);
+for(#slotnumber,9,44);
+	getslotitem(%#slotnumber%,&idvar);
+	if(&idvar != "air");
+		slotclick(%#slotnumber%,left);
+		slotclick(36,left);
+		slotclick(%#slotnumber%,left);
+		if(MAINHANDITEM != "air");
+			logto(itemorder.txt,"%MAINHANDITEMNAME%");
+			push(&item_list[],"%MAINHANDITEMNAME%");
+		endif;
+	endif;
+next;
+slotclick(36,left);
+wait(1t);
+slotclick(37,left);
+logto(itemorder.txt,"----------------------");
+unsafe;
+foreach(&alphabet[],&alphabet_letter)
+	ucase(%&alphabet_letter%,&alphabet_letter_upper);
+	lcase(%&alphabet_letter%,&alphabet_letter_lower);
+	#index = 0;
+	unset(&templist[]);
+	foreach(&item_list[],&item_name);
+		split("",%&item_name%,&item_name_letter[]);
+		if((&alphabet_letter_lower == &item_name_letter[%#index%]) || (&alphabet_letter_upper == &item_name_letter[%#index%]) || (&alphabet_letter == &item_name_letter[%#index%]));
+			push(&item_order[],%&item_name%);
+		endif;
+	next;
+next;
+endunsafe;
+wait(3t);
+#startslot = 9;
+#currentslot = 9;
+foreach(&item_order[],&item_order_name);
+	for(#slotnumber,%#startslot%,44);
+		getslotitem(%#slotnumber%,&idvar);
+		if(&idvar != "air");
+			slotclick(%#slotnumber%,left);
+			slotclick(36,left);
+			wait(1t);
+			if(MAINHANDITEMNAME == &item_order_name);
+				slotclick(36,left);
+				slotclick(%#currentslot%,left);
+				inc(#startslot,1);
+				inc(#currentslot,1);
+				break;
+			endif;
+		endif;
+	next;
+next;
+gui();

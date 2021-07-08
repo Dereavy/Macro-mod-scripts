@@ -1,0 +1,635 @@
+$${
+
+//  MEXICAN INVENTORY SORTER                                    ;   
+//  From lomexicano                                             ;
+//  Discord Tag: lomexicano#0001                                ;
+//  Discord ID: 277301646050983936                              ;
+
+// This script put the items from your inventory in alphabetical order;
+// This should work in any version of Minecraft >= 1.5.2 (with Macro KeyBind Mod, of course);
+
+set(&char_order,"_0123456789abcdefghijklmnopqrstuvwxyz");
+unset(display_sorting_time);
+
+log(" ");
+toggle(@mexican_inventory_sorter);
+if(!@mexican_inventory_sorter);
+    log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &fMexican &eInventory &aSorter&f: &cOFF");
+    stop("MEXICAN_INVENTORY_SORTER");
+    stop;
+endif;
+log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &fMexican &eInventory &aSorter&f: &aON");
+
+// Asking the player to choose a delay;
+prompt(&slotclick_delay,"$$[Delay[§c3t,§e2t,§f1t,§a0t]]","§fChoose a delay for the slotclicks. §a0t §eis the fastest§f, but it may not work and you'll probably not see how it works... §8(but give it a try anyway)");
+
+// Setting it to 2 ticks if the player hasn't answered anything between 0 and 9 ticks;
+ifmatches(%&slotclick_delay%,"^(\u00A7\w)*\dt$");
+else;
+    set(&slotclick_delay,"§e2t");
+endif;
+
+// Displaying the selected delay in an achievementget;
+ifmatches("%ITEM%","[a-z]");
+    if(UNIQUEID);
+        toast("tutorial","mouse","§fDelay: %&slotclick_delay%",,20);
+    else;
+        //if the version doesn't have 'UNIQUEID' it doesn't have 'Toast';
+        achievementget("§fDelay: %&slotclick_delay%","ender_eye");
+    endif;
+else;
+    // 1.5.2 compatibility;
+    achievementget("§fDelay: %&slotclick_delay%",381);
+endif;
+strip(&slotclick_delay,"%&slotclick_delay%");
+
+unset(no_delay);
+if(&slotclick_delay == "0t");
+    set(no_delay);
+endif;
+
+// Asking the player to choose a sorting method;
+prompt(&sorting_method,"$$[Method[§7(§a1§7) §aReading the item §eheld §aby the mouse §7(fastest),§7(§b2§7) §fSwapping items §euntil §fthey fit §ethe right order,§7(§e3§7) §fSimple way §7(just arrange the items)]]","§fChoose one of these 3 possible methods to put the items in the right place");
+strip(&sorting_method,"%&sorting_method%");
+set(#sorting_method,1);
+ifmatches(%&sorting_method%,"2");
+    set(#sorting_method,2);
+endif;
+ifmatches(%&sorting_method%,"3");
+    set(#sorting_method,3);
+endif;
+
+// Displaying the selected sorting method in an achievementget;
+ifmatches("%ITEM%","[a-z]");
+    if(#sorting_method == 1);
+        achievementget("§a1st §fMethod","sugar");
+    elseif(#sorting_method == 2);
+        achievementget("§b2nd §fMethod","reeds");
+    else;
+        achievementget("§e3rd §fMethod","stone");
+    endif;
+else;
+    // 1.5.2 compatibility;
+    if(#sorting_method == 1);
+        achievementget("§a1st §fMethod",353);
+    elseif(#sorting_method == 2);
+        achievementget("§b2nd §fMethod",338);
+    else;
+        achievementget("§e3rd §fMethod",1);
+    endif;
+endif;
+
+if(#sorting_method != 3);
+    // Asking the player if he wants to see the expected result in the chat;
+    prompt(&display_expected_result,"$$[DisplayResult[§aYes,§cNo]]","§fDo you want to display the expected result in the chat after sorting the array?");
+    strip(&display_expected_result,"%&display_expected_result%");
+    unset(display_expected_result);
+    ifmatches(%&display_expected_result%,"Y|S");
+        set(display_expected_result);
+    endif;
+    if(display_expected_result);
+        achievementget("§aDisplay expected result","redstone");
+    else;
+        achievementget("§cDo not display expected result",331);
+    endif;
+endif;
+
+// Using the command 'title' only if the variable XPOSF exists (because they were both included in the mod in the same version);
+if(XPOSF);
+    title(,"&fOpen your &ainventory &fto start...",2,40,40);
+else;
+    log(" ");
+    log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &fOpen your inventory to start...");
+endif;
+
+// Waiting for the player to open the inventory. It won't wait more than 80 loops (50ms/loop -> 4 seconds). The user can also press DELETE to stop the script here;
+do(80);
+until((GUI == "GUIINVENTORY")||(KEY_DELETE));
+
+// Stopping the script if the player hasn't opened the inventory in time;
+if(GUI != "GUIINVENTORY");
+    if(XPOSF);
+        title(,"&cYou did not open your inventory in time!",2,30,40);
+    else;
+        log("  ");
+        log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &fYou did not open your inventory in time!");
+    endif;
+    unset(@mexican_inventory_sorter);
+    log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &fMexican &eInventory &aSorter&f: &cOFF");
+    stop("MEXICAN_INVENTORY_SORTER");
+    stop;
+endif;
+
+unset(useless_logs);
+
+unsafe(0);
+    // Splitting the chars in the &char_order string in an array;
+    // .. This is how you can 'split' a string variable in 1.5.2 without the 'split' command... Just a simple loop;
+    unset(&char_order[]);
+    do();
+        match(%&char_order%,"^(.)(.*)$",{&char,&rest});
+        push(&char_order[],"%&char%");
+        set(&char_order,"%&rest%");
+    until(!&char_order);
+    
+    if((#sorting_method == 1)||(#sorting_method == 2));
+        // Reading the content of the inventory and saving the position and name of every item + which slots are empty;
+        unset(&array_inventory_names[]);
+        unset(&array_inventory_names_backup[]);
+        unset(#array_inventory_slots[]);
+        unset(#empty_slots_list[]);
+        for(#slot,9,44);
+            ifmatches(%ITEM%,"[a-z]");
+                getslotitem(%#slot%,&id,#stack,#data);
+            else;
+                // 1.5.2 compatibility;
+                getslotitem(%#slot%,#id,#stack,#data);
+                set(&id,"%#id%");
+            endif;
+            getiteminfo("%&id%:%#data%",&name);
+            if(#stack > 0);
+                push(&array_inventory_names[],"%&name%");
+                push(&array_inventory_names_backup[],"%&name%");
+                push(#array_inventory_slots[],"%#slot%");
+            else;
+                push(#empty_slots_list[],"%#slot%");
+                set(&empty_name,"%&name%");
+            endif;
+        next;
+    endif;
+endunsafe;
+
+if((#sorting_method == 1)||(#sorting_method == 2));
+    //  Saving the time (with milisseconds) of the system before sorting the items. 
+    //  Useful to check +- how many seconds it takes to end;
+    time(&time_start,"HH:mm:ss:SSS");
+
+
+    // Sorting the array... 
+    //   ~ I know it's not the smartest way to do it... Maybe it's the dumbest one, but it works;
+    //   ~ The 3rd method doesn't need to do it... That's why it's "simple";
+
+    unsafe(3000);
+        unset(&ordered_names[]);
+        unset(#ordered_slots[]);
+        
+        arraysize(&array_inventory_names[],#total);
+        
+        #missing = #total;
+        
+        // This will 'basically' try to find the 'best' item in the array, push it to another list and remove it from the previous array;
+        // So, with time, there will be no items in the first array and they will be alphabetically sorted in the new array;
+        // This part of the script will also save the slot of these items in an iteger-array, so it will know the order of the slots it will need to click when ordering them in the inventory;
+
+        do(%#total%);
+            #lowest_index = 99999;
+            unset(&item_under_analysis);
+            #index_under_analysis = -1;
+            foreach(&array_inventory_names[],&item_name,#index);
+                ifmatches(%&item_name%,"\w");
+                    
+                    // This sortering system accepts colors (with §) in the beggining of the items;
+                    // § = \u00A7;
+                    match(%&item_name%,"^(?:\u00A7\w)*(.)",{&first_character});
+                    indexof(&char_order[],#index_letter,"%&first_character%");
+                    if(#index_letter <= #lowest_index);
+                        set(this_one);
+                        if(#index_letter == #lowest_index);
+                            set(&item_under_analysis_now,"%&item_name%");
+                            set(&item_under_analysis_before,"%&array_inventory_names[%#index_under_analysis%]%");
+                            set(this_one);
+                            do();
+                                match("%&item_under_analysis_now%","^(?:\u00A7\w)*(.)(.|$)",{&first_character,&second_character});
+                                match("%&item_under_analysis_before%","^(?:\u00A7\w)*(.)(.|$)",{&first_character_2,&second_character_2});
+                                if(!&second_character);
+                                    break;
+                                elseif(!&second_character_2);
+                                    unset(this_one);
+                                    break;
+                                else;
+                                    indexof(&char_order[],#index_letter_temp_1,"%&second_character%");
+                                    indexof(&char_order[],#index_letter_temp_2,"%&second_character_2%");
+                                    if(#index_letter_temp_1 == #index_letter_temp_2);
+                                        match("%&item_under_analysis_now%","^((?:\u00A7\w)*).(.*)$",{&possible_color_character,&resto});
+                                        match("%&item_under_analysis_before%","^((?:\u00A7\w)*).(.*)$",{&possible_color_character_2,&resto_2});
+                                        set(&item_under_analysis_now,"%&possible_color_character%%&resto%");
+                                        set(&item_under_analysis_before,"%&possible_color_character_2%%&resto_2%");
+                                    elseif(#index_letter_temp_1 < #index_letter_temp_2);
+                                        break;
+                                    else;
+                                        unset(this_one);
+                                        break;
+                                    endif;
+                                endif;
+                            loop;
+                        endif;
+                        if(this_one);
+                            set(&item_under_analysis,"%&item_name%");
+                            set(#lowest_index,"%#index_letter%");
+                            set(#index_under_analysis,"%#index%");
+                        endif;
+                    endif;
+                endif;
+            next;
+            push(&ordered_names[],"%&array_inventory_names[%#index_under_analysis%]%");
+            push(#ordered_slots[],"%#array_inventory_slots[%#index_under_analysis%]%");
+            unset(&array_inventory_names[%#index_under_analysis%]);
+            dec(#missing,1);
+
+            // The user can press DELETE to toggle the 'log' that displays how many items are left before the end of the process;
+            // It's not really useful with 36 items in the array, but it's good when you have hundreds of them;
+            if(KEY_DELETE);
+                toggle(show_ordering_progress);
+                do(10);
+                    wait(1t);
+                until(!KEY_DELETE);
+            endif;
+            if(show_ordering_progress);
+                log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &fOrdering... &8[&a%#missing%&7/&e%#total%&8] [DELETE to hide]");
+            endif;
+        loop;
+    endunsafe;
+
+
+    // Saving the time (with milisseconds) of the system after sorting the items. 
+    time(&time_end,"HH:mm:ss:SSS");
+
+    // Splitting the milisseconds to log them in a different color;
+    match("%&time_start% %&time_end%","^(.+)(:\d{3}) (.+)(:\d{3})$",{&general_time_start,&ms_time_start,&general_time_end,&ms_time_end})
+
+    // Displaying this 'time' information;
+    if(display_sorting_time);
+        log(" ");
+        log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &fThe sorting process started at &e%&general_time_start%&7%&ms_time_start% &fand ended at &e%&general_time_end%&7%&ms_time_end%&f...");
+        log(" ");
+    endif;
+
+
+    // If the user wants to display (in the chat) the expected result before moving the items;
+    if(display_expected_result);
+        foreach(&ordered_names[],&i,#j);
+            set(#k,"%#j%");
+            inc(#k,9);
+            log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &8[&aSlot %#k%&8] &e%&i%");
+        next;
+    endif;
+
+    // Adding the empty slots to the end of the list;
+    arraysize(#empty_slots_list[],#empty);
+    if(#empty > 0);
+        unsafe;
+            foreach(#empty_slots_list[],#slot_to_push);
+                push(&ordered_names[],"%&empty_name%");
+                push(#ordered_slots[],"%#slot_to_push%");
+            next;
+        endunsafe;
+    endif;
+endif;
+
+// Time to move things until the inventory well organized;
+// There are two ways that this script moves things:
+//      #sorting_method 1: 
+//          -> if the mouse is holding an item already, it doesn't do anything in this step. Otherwise, it searches for the first slot in the inventory that is not with the correct item, and clicks on it. 
+//          -> Now there is an item hold by the mouse, so the script will look, in the ordered list, for correct place to put it and click this slot. If this slot had an item already, then this is the next item it will search for the correct place;
+//          -> the script will remove items from the ordered list as soon as they are put in their position;
+//
+//      #sorting_method: 2;
+//          -> &ordered_names[] is an array with the names of the items, sorted alfabetically. #ordered_slots[] is an array that has the information of where each item from &ordered_names[] is (the slot number). So, for example, if the item that should be in the FIRST slot is actually in slot 25, then the FIRST number in #ordered_slots[] is 25.
+//          -> the script will check if this slot number is the same as its position in the array corresponds to (for example, if the first item in the array is in the first slot). If it's not, then it will click this wrong slot -> click the slot it should be -> click the wrong slot again. This way it will swap those items, and now one item is in the correct position.
+//          -> having swapped the items, their position will be swapped in #ordered_slots[] too, so #ordered_slots[] will always have information you can trust;
+//
+//
+//      #sorting_method: 3 (The simple way);
+//          --> this method doesn't need to sort the inventory previously, it will just organize the inventory in real time;
+//          -> Iterate over the inventory (1)
+//          -> Iterate over the inventory again (2), but starting from the slot of the previous iteration (1).
+//          -> In this second iteration it will try to find the best item left in the inventory, and put it in the slot of the first one;
+//
+//
+// Therefore, '#sorting_method 1' is faster than '#sorting_method 2', since it doesn't need to swap items everytime (when it has something held by the mouse, it tries to put it the position it should be, instead of putting it in an empty slot);
+// But, '#sorting_method 3' is even faster than the other two because it doesn't need to arrange the items before moving them;
+
+
+if(#sorting_method == 1);
+    // if you chose for the 1st sorting type;
+
+    unset(#removed_ones);
+    unset(first_click);
+    arraysize(&array_inventory_names_backup[],#size);
+    unset(&item_now);
+    unsafe(2000);
+        do(%#size%);
+
+            // if there is no item held by the mouse;
+            if(!&item_now);
+                // tries to find the first slot that isn't correct;
+                for(#slot,9,44);
+                    ifmatches(%ITEM%,"[a-z]");
+                        getslotitem(%#slot%,&id,#i,#data);
+                        set(&id,"%&id%:%#data%");
+                    else;
+                        getslotitem(%#slot%,#id,#i,#data);
+                        set(&id,"%#id%:%#data%");
+                    endif;
+                    // gets the name of the item in the slot;
+                    getiteminfo("%&id%",&name_now);
+
+                    // getting what item should be in this slot
+                    #index = #slot - 9;
+                    set(&expected_name,"%&ordered_names[%#index%]%");
+
+                    // if there is something in this slot, the name of the item isn't what it should be and the name it should be actually exists;
+                    if((#i > 0)&&(&expected_name != &name_now)&&(&expected_name));
+
+                        // clicks the slot;
+                        slotclick(%#slot%);
+
+                        // save the name of the item in the slot as the item now held by the mouse;
+                        set(&item_now,"%&name_now%");
+
+                        if(!no_delay);
+                            wait(%&slotclick_delay%);
+                        endif;
+                        break;
+                    
+                    // if the item is in its correct position already;
+                    elseif(&expected_name == &name_now);
+                        // removes it from the list;
+                        unset(&ordered_names[%#index%]);
+                        inc(#removed_ones,1);
+                        
+                        // if it removes 36 items, it's over;
+                        if(#removed_ones >= 36);
+                            break;
+                        endif;
+                    endif;
+                next;
+            endif;
+            // if there is something held by the mouse;
+            if(&item_now);
+                // finds the first slot where it fits;
+                indexof(&ordered_names[],#pos,"%&item_now%");
+
+                // remove this slot from the array;
+                unset(&ordered_names[%#pos%]);
+                inc(#removed_ones,1);
+                inc(#pos,9);
+                if(useless_logs);
+                    log("&7now: &e%&item_now% &8<> &7expected slot: &e%#pos%");
+                endif;
+
+                // save the information regarding this slot before click it;
+                ifmatches(%ITEM%,"[a-z]");
+                    getslotitem(%#pos%,&id,#i,#data);
+                    set(&id,"%&id%:%#data%");
+                else;
+                    getslotitem(%#pos%,#id,#i,#data);
+                    set(&id,"%#id%:%#data%");
+                endif;
+
+                // clicks the slot;
+                slotclick(%#pos%);
+                if(!no_delay);
+                    wait(%&slotclick_delay%);
+                endif;
+
+                // if there is anything in the slot;
+                if(#i > 0);
+                    // save this information as the item held by the mouse;
+                    getiteminfo("%&id%",&item_now);
+
+                    if(useless_logs);
+                        log("&fThere was &a%&item_now% &fin slot &b%#pos%");
+                    endif;
+                else;
+                    unset(&item_now);
+                endif;
+            endif;
+        until(#removed_ones >= 36);
+    endunsafe;
+elseif(#sorting_method == 2);
+    arraysize(#ordered_slots[],#max_slots);
+    dec(#max_slots,1);
+    #index = 0;
+
+    unsafe(500);
+        
+        // I'll iterate over the array using 'do()' instead of 'foreach' so I can edit the contents of the arrays while reading them; 
+        do();
+            if(#index > #max_slots);
+                if(useless_logs);
+                    log("index %#index% > max_slots %#max_slots%");
+                endif;
+                break;
+            endif;
+            
+            // What slot we are iterating over now;
+            #inventory_slot_now = #index + 9;
+
+            // What slot is supposed to swap with the slot we are iterating over now;
+            set(#slot_coming,"%#ordered_slots[%#index%]%");
+
+            // We don't want to swap an item with itself, so... ;
+            if(#slot_coming != #inventory_slot_now);
+
+                // Checking what's in both slots;
+                ifmatches(%ITEM%,"[a-z]");
+                    getslotitem(%#slot_coming%,&id,#i,#data);
+                    getslotitem(%#inventory_slot_now%,&id_now,#i,#data_now);
+                else;
+                    // 1.5.2 compatibility;
+                    getslotitem(%#slot_coming%,#id,#i,#data);
+                    getslotitem(%#inventory_slot_now%,#id_now,#i,#data_now);
+                    set(&id,"%#id%");
+                    set(&id_now,"%#id_now%");
+                endif;
+
+                // Getting the name of the item in both slots;
+                getiteminfo("%&id%:%#data%",&name);
+                getiteminfo("%&id_now%:%#data_now%",&name_now);
+
+                // We don't want to click the slots if them both have the same item;
+                if(&name != &name_now);
+                    if(useless_logs);
+                        log("%#slot_coming% -> %#inventory_slot_now% -> %#slot_coming%");
+                    endif;
+
+                    // Clicking the first slot, with left-mouse-button (default), without shift (false = default);
+                    slotclick(%#slot_coming%);
+                    if(!no_delay);
+                        wait(%&slotclick_delay%);
+                    endif;
+
+                    // Clicking the second slot, with left-mouse-button (default), without shift (false = default);
+                    slotclick(%#inventory_slot_now%);
+                    if(!no_delay);
+                        wait(%&slotclick_delay%);
+                    endif;
+
+                    // Clicking the first slot, with left-mouse-button (default), without shift (false = default);
+                    slotclick(%#slot_coming%);
+                    if(!no_delay);
+                        wait(%&slotclick_delay%);
+                    endif;
+                    
+                    // Swaping the items in the array that says what item is in what slot to keep it up-to-date;
+                    indexof(#ordered_slots[],#index_replace_1,"%#slot_coming%");
+                    indexof(#ordered_slots[],#index_replace_2,"%#inventory_slot_now%");
+                    set(#temp_1,"%#ordered_slots[%#index_replace_1%]%");
+                    set(#temp_2,"%#ordered_slots[%#index_replace_2%]%");
+                    set(#ordered_slots[%#index_replace_1%],"%#temp_2%");
+                    set(#ordered_slots[%#index_replace_2%],"%#temp_1%");
+
+
+                    if(useless_logs);
+                        log("#ordered_slots[%#index_replace_1%]: %#temp_2% <> #ordered_slots[%#index_replace_2%]: %#temp_1%");
+                    endif;
+                endif;
+            else;
+                if(useless_logs);
+                    log("slot %#slot_coming% &aOK");
+                endif;
+            endif;
+
+            // Increasing the slot we are reading now;
+            inc(#index,1);
+        loop;
+    endunsafe;
+else;
+    // the simple method, which is basically iterate over the inventory trying to find the best item left;
+    unsafe(2000);
+
+        //iterate over the whole inventory -> this iteration is telling the script which slot we want to fill now;
+        for(#slot,9,44);
+
+            // the 'best slot' so far is the slot we are iterating over;
+            #best_one_slot = #slot;
+            ifmatches("%ITEM%","[a-z]");
+                getslotitem(%#slot%,&id,#stack,#data);
+            else;
+                getslotitem(%#slot%,#id,#stack,#data);
+                set(&id,"%#id%");
+            endif;
+
+            // set 'best_one' to the worst possible name;
+            set(&best_one,"zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
+            
+            // if there is something in this slot, replace the 'best_one' with the name of the item in this slot;
+            if(#stack > 0);
+                getiteminfo("%&id%:%#data%",&best_one);
+            endif;
+
+            // iterate over the rest of the inventory (the slots that may not be correct yet). So it will start from the slot of the previous iteration (and go until the end of the inventory);
+            for(#slot_2,%#slot%,44);
+
+                //get the name of the item in the slot we are iterating over now;
+                ifmatches("%ITEM%","[a-z]");
+                    getslotitem(%#slot_2%,&id,#stack,#data);
+                else;
+                    // 1.5.2 compatibility;
+                    getslotitem(%#slot_2%,#id,#stack,#data);
+                    set(&id,"%#id%");
+                endif;
+                getiteminfo("%&id%:%#data%",&now);
+
+                // if there is something in the slot, and the name of it isn't the same as the 'best_one';
+                if((#stack > 0)&&(&now != &best_one));
+
+                    // let's assume that 'now' will be better than 'best_one';
+                    set(better);
+
+                    set(&best_one_temp,"%&best_one%");
+                    set(&now_temp,"%&now%");
+
+                    // read each letter of the item 'now' and the 'best_one', comparing them; 
+                    do();
+
+                        // Note that those two match commands get the first letter of each word and replace the word with the rest of it (without the first letter);
+                        match(%&best_one_temp%,"^(.)(.*)$",{&first_best_one,&best_one_temp});
+                        match(%&now_temp%,"^(.)(.*)$",{&first_now,&now_temp});
+                        
+                        // Get the position of the first letter of both words in the character list. The lower, the better;
+                        indexof(&char_order[],#char_best_one,"%&first_best_one%");
+                        indexof(&char_order[],#char_now,"%&first_now%");
+
+                        // if the first char left in '&best_one' is found first in the char_order, then 'best_one' is still better than 'now';
+                        if(#char_best_one < #char_now);
+                            // so let's unset 'better', to tell the script that our assumption that 'now' would be better was wrong;
+                            unset(better);
+                            break;
+
+                        // on the other hand, if the first char left in 'now' is found first, then 'now' is actually better than 'best_one';
+                        elseif(#char_now < #char_best_one);
+                            break;
+                        endif;
+
+                        // If one of the words doesn't have any more characters, then it's done;
+                    until((!&best_one_temp)||(!&now_temp));
+
+                    // if 'now' is better than 'best_one', let's change 'best_one' to the value of 'now' (that is the best one now xD);
+                    if(better);
+                        set(&best_one,"%&now%");
+
+                        //let's also save the slot of the best item;
+                        set(#best_one_slot,"%#slot_2%");
+                    endif;
+                endif;
+            next;
+
+            // if the 'best slot' isn't the same as the slot we are exchanging it with;
+            if((#best_one_slot >= 9)&&(#slot != #best_one_slot));
+
+                // swap those slots (#slot and the #best_one_slot that we saved when we found the best item above);
+                slotclick(%#best_one_slot%);
+                if(!no_delay);
+                    wait(%&slotclick_delay%);
+                endif;
+                slotclick(%#slot%);
+                if(!no_delay);
+                    wait(%&slotclick_delay%);
+                endif;
+                slotclick(%#best_one_slot%);
+
+            endif;
+        next;
+    endunsafe;
+endif;
+
+// Clicking an empty slot (if there is any); 
+if(GUI == "GUIINVENTORY");
+    ifmatches(%ITEM%,"[a-z]");
+        getslot("air",#empty_slot,9);
+    else;
+        // 1.5.2 compatibility (the legacy ID for 'air' is 0);
+        getslot(0,#empty_slot,9);
+    endif;
+    if(#empty_slot >= 9);
+        slotclick(%#empty_slot%);
+    endif;
+endif;
+
+log(" ");
+log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &aSucess!");
+
+if(UNIQUEID);
+    toast("Challenge","diamond","§aSucess!");
+else;
+    ifmatches(%ITEM%,"[a-z]");
+        achievementget("§aSucess!","diamond");
+    else;
+        achievementget("§aSucess!",264);
+    endif;
+endif;
+
+do(50);
+until((GUI == "NONE")||(!XPOSF));
+
+// Nice;
+if(XPOSF);
+    title(,"&aNice",10,20,10);
+endif;
+
+unset(@mexican_inventory_sorter);
+log("&f&l[&2&lMA&f&lC&4&lRO&f&l] &fMexican &eInventory &aSorter&f: &cOFF");
+stop("MEXICAN_INVENTORY_SORTER");
+}$$

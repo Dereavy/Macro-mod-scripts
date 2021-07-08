@@ -1,0 +1,167 @@
+unsafe;
+      unset(#datavarused);
+      unset(#usedslot[]);
+      unset(&itemid[]);
+      unset(#emptyslots[]);
+      unset(&datavar[]);
+      unset(&itemname[]);
+      unset(&alphabet[]);
+      unset(&sorted[]);
+      unset(&sortedname[]);
+      unset(&evenmoresorted[]);
+      unset(&sortedfirstletter[]);
+      unset(&twoletters[]);
+      unset(&tosort[]);
+      unset(&itemiid[]);
+      unset(&sorteditemid[]);
+      unset(#usedslot[]);
+      unset(#sortedslots[]);
+      unset(&idvaar[]);
+      unset(&idnamevar[]);
+      log("&8[&aSC&8] &cInitiated Alphabetical sorter");
+      echo("/gamemode survival");
+      looks(270,0,1);
+      title("&bLet's get a little music going","jk wouldn't want to drown out lezappen's voice twice",,100);
+      wait(5);
+      log("&4&lParsing data")
+      log("&4&lCalcumelating alphabet")
+      log("&4&lChecking dictionary")
+      wait(8)
+      do();
+            gui(inventory);
+      until(GUI != "NONE");
+      wait(500ms);
+      // scans invetory slots with the inventory open;
+      for(#i,9,44);
+            getslotitem(%#i%,&itemid,#stacksizevar,#datavar);
+            // checking for slots that are not empty;
+            if((#datavar != 0)&&(%&itemid% != "air"));
+                  // adds itemid:datavar to an array if #datavar is not 0;
+                  push(#usedslot[],%#i%);
+                  push(&datavar[],"%&itemid%:%#datavar%");
+                  inc(#datavarused,1);
+            endif;
+            // log("slot: %#i% id: %&itemid%, stacksize: %#stacksizevar%, datavar: %#datavar%");
+            // checking for used slots that don't have a datavar;
+            if(%&itemid% != "air");
+                  if(%#stacksizevar% != 0);
+                        // making sure it's not using an item with a datavar, otherwise you'd have duplicates;
+                        if(#datavarused == 0);
+                              push(#usedslot[],%#i%);
+                              push(&itemid[],%&itemid%);
+                              // if slot is empty, add to array;
+                        elseif(%#stacksizevar% == 0);
+                              push(#emptyslots[],%#i%);
+                              // unsetting #datavarused so it's not more than one for multiple items that have a datavar using this to check if an item was already added to the datavar array;
+                        elseif(#datavarused != 0);
+                              unset(#datavarused);
+                        endif;
+                  endif;
+            endif;
+      next;
+      #xpos = %XPOS%;
+      #zpos = %ZPOS%;
+      #ypos = %YPOS%;
+      #xpos1 = #xpos + 2;
+      #zpos1 = #zpos + 1;
+      #xpos2 = #xpos1;
+      #zpos2 = #zpos - 1;
+      #xpos3 = #xpos1;
+      #zpos3 = %ZPOS%;
+      #ypos1 = #ypos + 1;
+      #ypos2 = #ypos + 2;
+      #ypos3 = #ypos + 3;
+      #ypos4 = #ypos + 4;
+      #ypos5 = #ypos + 5;
+      #ypos6 = #ypos + 6;
+      #ypos7 = #ypos + 7;
+      #ypos8 = #ypos + 8;
+      echo("/setblock %#xpos1% %#ypos% %#zpos1% wool 2");
+
+      echo("/setblock %#xpos2% %#ypos% %#zpos2% wool 2");
+  
+      echo("/setblock %#xpos3% %#ypos1% %#zpos3% wool 2");
+  
+      echo("/setblock %#xpos3% %#ypos2% %#zpos3% wool 2");
+   
+      echo("/setblock %#xpos3% %#ypos3% %#zpos3% wool 2");
+ 
+      echo("/setblock %#xpos3% %#ypos4% %#zpos3% wool 2");
+
+      echo("/setblock %#xpos3% %#ypos5% %#zpos3% wool 2");
+
+      echo("/setblock %#xpos3% %#ypos6% %#zpos3% wool 2");
+ 
+      echo("/setblock %#xpos3% %#ypos7% %#zpos3% wool 2");
+ 
+      echo("/setblock %#xpos3% %#ypos8% %#zpos3% wool 2");
+      clearchat
+      log("")
+      
+      
+      arraysize(&itemid[],#arraysize);
+      arraysize(&datavar,#arraysize1);
+      if((#arraysize == 0)&&(#arraysize1 == 0));
+            log("&cInventory is empty, stopping script");
+            stop;
+      endif;
+      unset(&owo);
+      unset(&itemname[]);
+      // getting the itemname for all itemid's;
+      foreach(&itemid[],&owo);
+            getiteminfo(%&owo%,&namevar);
+            push(&itemname[],"%&namevar%");
+            push(&itemiid[],%&owo%);
+      next;
+      // getting the itemname for all itemid's that have a datavar;
+      foreach(&datavar[],&uwu);
+            getiteminfo(%&uwu%,&namevar);
+            push(&itemname[],"%&namevar%");
+            push(&itemiid[],%&owo%);
+      next;
+      unset(&idnamevar[]);
+      unset(#sortedslot);
+      wait(1t);
+      foreach(#usedslot[],#slot);
+            getslotitem(%#slot%,&idvar,,#datavar);
+            if(#datavar != 0);
+                  set(&idvar,%&idvar%:%#datavar%);
+            endif;
+            getiteminfo(%&idvar%,&namevar);
+            push(&idvaar[],%&idvar%);
+            push(&idnamevar[],"%&idvar%|%&namevar%");
+      next;
+      &alphabet[] = split("","abcdefghijklmnopqrstuvwxyz");
+      echo("/clear");
+      foreach(&alphabet[],&alphabet);
+            foreach(&idnamevar[],&idnamevar);
+                  &behindreplace = regexreplace(&idnamevar,"[^|]*$","");
+                  &idvar = regexreplace(&behindreplace,"[|]","");
+                  &beforereplace = regexreplace(&idnamevar,"^[^|]*","");
+                  &namevar = regexreplace(&beforereplace,"[|]","");
+                  ifbeginswith(%&namevar%,%&alphabet%);
+                        wait(1t);
+                        ifcontains(%&idvar%,":");
+                              &behindreplace = regexreplace(&idvar,"[^:]*$","");
+                              &id = regexreplace(&behindreplace,"[:]","");
+                              match(%&idnamevar%,"[0-9]+",#data);
+                              &command = "/give @p %&id% 1 %#data%";
+                              echo("%&command%");
+                        else;
+                              echo("/give @p %&idvar%");
+                        endif;
+                  endif;
+            next;
+      next;
+      wait(2)
+      press(escape)
+      wait(5)
+      title("&bFun fact, the word ""competition"" means","the activity of striving to win something by defeating or establishing superiority over others.",,160)
+      wait(7)
+      log("fyi if you think it waas easier using /give instead of slotclick it defenitly wasn't the way I did it")
+      wait(2)
+      lograw(["",{"text":"Alphabetical Sorter is a bitch > ","color":"red"},{"text":"[CLICK HERE] ","color":"green","clickEvent":{"action":"open_url","value":"https://gyazo.com/c6ce7e9ea08da83ef2517d660dd9f76d"},"hoverEvent":{"action":"show_text","value":{"text":"","extra":[{"text":"click for cute cat","color":"red"}]}}}]);
+      log("&aAlphabetical sorter &cOFF")
+      wait(5)
+      look(90,0,1)
+endunsafe;
